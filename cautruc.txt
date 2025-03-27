@@ -1,0 +1,51 @@
+licenseplate-backend/
+├── pom.xml                         // File cấu hình Maven
+├── README.md                       // Tài liệu dự án
+└── src
+    ├── main
+    │   ├── java
+    │   │   └── com
+    │   │       └── example
+    │   │           └── licenseplate
+    │   │               ├── LicensePlateApplication.java      // Lớp main chạy ứng dụng Spring Boot
+    │   │               ├── config
+    │   │               │   └── SecurityConfig.java             // Cấu hình bảo mật (JWT, CORS, v.v.)
+    │   │               ├── controller
+    │   │               │   ├── VehicleController.java          // CRUD xe 2 banh va oto
+    │   │               │   ├── AuthController.java             // Đăng nhập và đăng ký (sử dụng JWT)
+    │   │               │   ├── UserController.java             // CRUD cho người dùng (bao gồm admin)
+    │   │               │   └── ScanController.java             // API xử lý quét biển số (upload ảnh, nhận diện…)
+    │   │               ├── dto
+    │   │               │   ├── JwtResponse.java                // DTO trả về token và thông tin user
+    │   │               │   ├── SignInRequest.java              // DTO đăng nhập
+    │   │               │   └── SignUpRequest.java              // DTO đăng ký
+    │   │               ├── filter
+    │   │               │   ├── JwtAuthenticationFilter.java      // Bộ lọc xác thực JWT cho request
+    │   │               │   └── WhitelistFilter.java              // Bộ lọc bỏ qua một số URL không cần xác thực
+    │   │               ├── model
+    │   │               │   ├── ERole.java                      // Enum định nghĩa các vai trò (USER, ADMIN, …)
+    │   │               │   ├── Role.java                       // Entity ánh xạ bảng roles
+    │   │               │   ├── User.java                       // Entity ánh xạ bảng users
+    │   │               │   ├── Vehicle.java                    // Entity ánh xạ bảng vehicle (thông tin xe)
+    │   │               │   └── ScanLog.java                    // Entity ánh xạ bảng scan_log (lịch sử quét)
+    │   │               ├── repository
+    │   │               │   ├── RoleRepository.java             // Repository cho Role
+    │   │               │   ├── UserRepository.java             // Repository cho User
+    │   │               │   ├── VehicleRepository.java          // Repository cho Vehicle
+    │   │               │   └── ScanLogRepository.java          // Repository cho ScanLog
+    │   │               ├── service
+    │   │               │   ├── AuthEntryPointJwt.java          // Xử lý lỗi xác thực không hợp lệ
+    │   │               │   ├── UserDetailsImpl.java            // Cài đặt UserDetails cho Spring Security
+    │   │               │   ├── UserDetailsServiceImpl.java     // Tải user từ DB
+    │   │               │   ├── UserService.java                // Xử lý nghiệp vụ người dùng (CRUD)
+    │   │               │   └── ScanService.java                // Xử lý nghiệp vụ quét biển số (upload, OCR,…)
+    │   │               └── util
+    │   │                   └── JwtUtil.java                    // Tiện ích tạo, phân tích và xác thực JWT token
+    │   └── resources
+    │       └── application.properties                        // Cấu hình ứng dụng (DB, jwt, …)
+    └── test
+        └── java
+            └── com
+                └── example
+                    └── licenseplate
+                        └── (Các file test cho dự án)
