@@ -11,6 +11,7 @@ licenseplate-backend/
     │   │               ├── config
     │   │               │   └── SecurityConfig.java             // Cấu hình bảo mật (JWT, CORS, v.v.)
     │   │               ├── controller
+    │   │               │   ├── VehicleController.java          // CRUD xe 2 banh va oto
     │   │               │   ├── AuthController.java             // Đăng nhập và đăng ký (sử dụng JWT)
     │   │               │   ├── UserController.java             // CRUD cho người dùng (bao gồm admin)
     │   │               │   └── ScanController.java             // API xử lý quét biển số (upload ảnh, nhận diện…)
