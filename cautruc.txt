@@ -1,6 +1,6 @@
 licenseplate-backend/
 ├── pom.xml                         // File cấu hình Maven
-├── README.md                       // Tài liệu dự án
+├── README.md                       // Tài liệu mô tả dự án
 └── src
     ├── main
     │   ├── java
@@ -9,24 +9,26 @@ licenseplate-backend/
     │   │           └── licenseplate
     │   │               ├── LicensePlateApplication.java      // Lớp main chạy ứng dụng Spring Boot
     │   │               ├── config
-    │   │               │   └── SecurityConfig.java             // Cấu hình bảo mật (JWT, CORS, v.v.)
+    │   │               │   └── SecurityConfig.java             // Cấu hình bảo mật (JWT, CORS, session…)
     │   │               ├── controller
-    │   │               │   ├── VehicleController.java          // CRUD xe 2 banh va oto
-    │   │               │   ├── AuthController.java             // Đăng nhập và đăng ký (sử dụng JWT)
-    │   │               │   ├── UserController.java             // CRUD cho người dùng (bao gồm admin)
-    │   │               │   └── ScanController.java             // API xử lý quét biển số (upload ảnh, nhận diện…)
+    │   │               │   ├── AuthController.java             // Endpoint đăng nhập, đăng ký (JWT)
+    │   │               │   ├── UserController.java             // CRUD cho người dùng (tất cả)
+    │   │               │   ├── AdminController.java            // CRUD cho admin (chỉ admin được phép truy cập)
+    │   │               │   └── ScanController.java             // Endpoint nhận dữ liệu quét biển số (upload file, …)
     │   │               ├── dto
     │   │               │   ├── JwtResponse.java                // DTO trả về token và thông tin user
     │   │               │   ├── SignInRequest.java              // DTO đăng nhập
-    │   │               │   └── SignUpRequest.java              // DTO đăng ký
+    │   │               │   ├── SignUpRequest.java              // DTO đăng ký cho người dùng
+    │   │               │   ├── AdminSignUpRequest.java         // DTO đăng ký cho admin
+    │   │               │   └── AdminUpdateRequest.java         // DTO cập nhật thông tin admin
     │   │               ├── filter
-    │   │               │   ├── JwtAuthenticationFilter.java      // Bộ lọc xác thực JWT cho request
-    │   │               │   └── WhitelistFilter.java              // Bộ lọc bỏ qua một số URL không cần xác thực
+    │   │               │   ├── JwtAuthenticationFilter.java    // Bộ lọc xử lý JWT cho request
+    │   │               │   └── WhitelistFilter.java            // Bộ lọc cho các URL không cần xác thực
     │   │               ├── model
-    │   │               │   ├── ERole.java                      // Enum định nghĩa các vai trò (USER, ADMIN, …)
+    │   │               │   ├── ERole.java                      // Enum định nghĩa các vai trò (ROLE_USER, ROLE_ADMIN, ROLE_MODERATOR)
     │   │               │   ├── Role.java                       // Entity ánh xạ bảng roles
     │   │               │   ├── User.java                       // Entity ánh xạ bảng users
-    │   │               │   ├── Vehicle.java                    // Entity ánh xạ bảng vehicle (thông tin xe)
+    │   │               │   ├── Vehicle.java                    // Entity ánh xạ bảng vehicle (xe hơi, xe 2 bánh)
     │   │               │   └── ScanLog.java                    // Entity ánh xạ bảng scan_log (lịch sử quét)
     │   │               ├── repository
     │   │               │   ├── RoleRepository.java             // Repository cho Role
@@ -34,15 +36,15 @@ licenseplate-backend/
     │   │               │   ├── VehicleRepository.java          // Repository cho Vehicle
     │   │               │   └── ScanLogRepository.java          // Repository cho ScanLog
     │   │               ├── service
-    │   │               │   ├── AuthEntryPointJwt.java          // Xử lý lỗi xác thực không hợp lệ
-    │   │               │   ├── UserDetailsImpl.java            // Cài đặt UserDetails cho Spring Security
-    │   │               │   ├── UserDetailsServiceImpl.java     // Tải user từ DB
-    │   │               │   ├── UserService.java                // Xử lý nghiệp vụ người dùng (CRUD)
-    │   │               │   └── ScanService.java                // Xử lý nghiệp vụ quét biển số (upload, OCR,…)
+    │   │               │   ├── AuthEntryPointJwt.java          // Xử lý lỗi khi xác thực không thành công
+    │   │               │   ├── UserDetailsImpl.java            // Cài đặt UserDetails (dùng cho Spring Security)
+    │   │               │   ├── UserDetailsServiceImpl.java     // Tải thông tin user từ DB
+    │   │               │   ├── UserService.java                // Nghiệp vụ CRUD cho người dùng
+    │   │               │   └── ScanService.java                // Nghiệp vụ xử lý quét biển số (lưu file, dữ liệu quét,…)
     │   │               └── util
-    │   │                   └── JwtUtil.java                    // Tiện ích tạo, phân tích và xác thực JWT token
+    │   │                   └── JwtUtil.java                    // Tiện ích tạo và xác thực JWT token
     │   └── resources
-    │       └── application.properties                        // Cấu hình ứng dụng (DB, jwt, …)
+    │       └── application.properties                        // Cấu hình ứng dụng (DB, jwt, port,…)
     └── test
         └── java
             └── com
