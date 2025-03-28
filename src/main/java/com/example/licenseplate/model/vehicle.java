@@ -1,6 +1,6 @@
 package com.example.licenseplate.model;
 
-public class vihicle {
+public class vehicle {
     //hi
     //test bang ij
 }
