@@ -7,47 +7,55 @@ licenseplate-backend/
     │   │   └── com
     │   │       └── example
     │   │           └── licenseplate
-    │   │               ├── LicensePlateApplication.java      // Lớp main chạy ứng dụng Spring Boot
+    │   │               ├── LicensePlateApplication.java      // Main chạy Spring Boot
     │   │               ├── config
-    │   │               │   └── SecurityConfig.java             // Cấu hình bảo mật (JWT, CORS, session…)
+    │   │               │   └── SecurityConfig.java             // Cấu hình bảo mật (JWT, CORS,…)
     │   │               ├── controller
-    │   │               │   ├── AuthController.java             // Endpoint đăng nhập, đăng ký (JWT)
+    │   │               │   ├── AuthController.java             // Đăng nhập/đăng ký (JWT)
     │   │               │   ├── UserController.java             // CRUD cho người dùng (tất cả)
-    │   │               │   ├── AdminController.java            // CRUD cho admin (chỉ admin được phép truy cập)
-    │   │               │   └── ScanController.java             // Endpoint nhận dữ liệu quét biển số (upload file, …)
+    │   │               │   ├── AdminController.java            // CRUD cho admin (chỉ admin)
+    │   │               │   ├── ScanController.java             // Endpoint quét biển số (nhận file, …)
+    │   │               │   └── VehicleController.java          // CRUD cho xe: Car & Motorcycle
     │   │               ├── dto
-    │   │               │   ├── JwtResponse.java                // DTO trả về token và thông tin user
+    │   │               │   ├── JwtResponse.java                // DTO trả về JWT và thông tin user
     │   │               │   ├── SignInRequest.java              // DTO đăng nhập
-    │   │               │   ├── SignUpRequest.java              // DTO đăng ký cho người dùng
-    │   │               │   ├── AdminSignUpRequest.java         // DTO đăng ký cho admin
-    │   │               │   └── AdminUpdateRequest.java         // DTO cập nhật thông tin admin
+    │   │               │   ├── SignUpRequest.java              // DTO đăng ký người dùng
+    │   │               │   ├── AdminSignUpRequest.java         // DTO đăng ký admin
+    │   │               │   └── AdminUpdateRequest.java         // DTO cập nhật admin
     │   │               ├── filter
-    │   │               │   ├── JwtAuthenticationFilter.java    // Bộ lọc xử lý JWT cho request
-    │   │               │   └── WhitelistFilter.java            // Bộ lọc cho các URL không cần xác thực
+    │   │               │   ├── JwtAuthenticationFilter.java    // Bộ lọc JWT
+    │   │               │   └── WhitelistFilter.java            // Bộ lọc bỏ qua URL công khai
     │   │               ├── model
-    │   │               │   ├── ERole.java                      // Enum định nghĩa các vai trò (ROLE_USER, ROLE_ADMIN, ROLE_MODERATOR)
-    │   │               │   ├── Role.java                       // Entity ánh xạ bảng roles
-    │   │               │   ├── User.java                       // Entity ánh xạ bảng users
-    │   │               │   ├── Vehicle.java                    // Entity ánh xạ bảng vehicle (xe hơi, xe 2 bánh)
-    │   │               │   └── ScanLog.java                    // Entity ánh xạ bảng scan_log (lịch sử quét)
+    │   │               │   ├── ERole.java                      // Enum vai trò (ROLE_USER, ROLE_ADMIN, …)
+    │   │               │   ├── Role.java                       // Entity bảng roles
+    │   │               │   ├── User.java                       // Entity bảng users
+    │   │               │   ├── Car.java                        // Entity bảng xe hơi
+    │   │               │   ├── Motorcycle.java                 // Entity bảng xe 2 bánh
+    │   │               │   ├── Person.java                     // Entity bảng person (người dân)
+    │   │               │   ├── ViPham.java                     // Entity bảng vi phạm
+    │   │               │   └── ScanLog.java                    // Entity bảng lịch sử quét (có thể chứa tham chiếu đến Person)
     │   │               ├── repository
     │   │               │   ├── RoleRepository.java             // Repository cho Role
     │   │               │   ├── UserRepository.java             // Repository cho User
-    │   │               │   ├── VehicleRepository.java          // Repository cho Vehicle
+    │   │               │   ├── CarRepository.java              // Repository cho Car
+    │   │               │   ├── MotorcycleRepository.java       // Repository cho Motorcycle
+    │   │               │   ├── PersonRepository.java           // Repository cho Person
+    │   │               │   ├── ViPhamRepository.java           // Repository cho ViPham
     │   │               │   └── ScanLogRepository.java          // Repository cho ScanLog
     │   │               ├── service
-    │   │               │   ├── AuthEntryPointJwt.java          // Xử lý lỗi khi xác thực không thành công
-    │   │               │   ├── UserDetailsImpl.java            // Cài đặt UserDetails (dùng cho Spring Security)
-    │   │               │   ├── UserDetailsServiceImpl.java     // Tải thông tin user từ DB
-    │   │               │   ├── UserService.java                // Nghiệp vụ CRUD cho người dùng
-    │   │               │   └── ScanService.java                // Nghiệp vụ xử lý quét biển số (lưu file, dữ liệu quét,…)
+    │   │               │   ├── AuthEntryPointJwt.java          // Xử lý lỗi xác thực
+    │   │               │   ├── UserDetailsImpl.java            // Cài đặt UserDetails
+    │   │               │   ├── UserDetailsServiceImpl.java     // Tải user từ DB
+    │   │               │   ├── UserService.java                // Nghiệp vụ CRUD user
+    │   │               │   ├── ScanService.java                // Nghiệp vụ xử lý quét
+    │   │               │   └── VehicleService.java             // Nghiệp vụ CRUD cho xe (Car, Motorcycle)
     │   │               └── util
-    │   │                   └── JwtUtil.java                    // Tiện ích tạo và xác thực JWT token
+    │   │                   └── JwtUtil.java                    // Tiện ích tạo & xác thực JWT
     │   └── resources
-    │       └── application.properties                        // Cấu hình ứng dụng (DB, jwt, port,…)
+    │       └── application.properties                        // Cấu hình (DB, jwt, …)
     └── test
         └── java
             └── com
                 └── example
                     └── licenseplate
-                        └── (Các file test cho dự án)
+                        └── (Các file test)
