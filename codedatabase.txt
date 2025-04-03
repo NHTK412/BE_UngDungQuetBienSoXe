@@ -1,0 +1,76 @@
+-- Table Roles
+CREATE TABLE roles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name ENUM('ROLE_USER','ROLE_ADMIN','ROLE_MODERATOR') NOT NULL UNIQUE
+);
+
+-- Table Users
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(255) NOT NULL UNIQUE,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL
+);
+
+-- Table Car (Xe hơi)
+CREATE TABLE car (
+  carId INT AUTO_INCREMENT PRIMARY KEY,
+  licensePlate VARCHAR(20) NOT NULL UNIQUE,
+  vehicleType VARCHAR(50),
+  brand VARCHAR(50),
+  color VARCHAR(30),
+  ownerName VARCHAR(100),
+  ownerContact VARCHAR(20)
+);
+
+-- Table Motorcycle (Xe 2 bánh)
+CREATE TABLE motorcycle (
+  motorcycleId INT AUTO_INCREMENT PRIMARY KEY,
+  licensePlate VARCHAR(20) NOT NULL UNIQUE,
+  vehicleType VARCHAR(50),
+  brand VARCHAR(50),
+  color VARCHAR(30),
+  ownerName VARCHAR(100),
+  ownerContact VARCHAR(20)
+);
+
+-- Table Person (Người dân)
+CREATE TABLE person (
+  person_id INT AUTO_INCREMENT PRIMARY KEY,
+  ho_ten VARCHAR(100) NOT NULL,
+  ngay_sinh DATE,
+  gioi_tinh VARCHAR(10),
+  dia_chi VARCHAR(255),
+  so_dien_thoai VARCHAR(20),
+  face_data VARCHAR(255)
+);
+
+-- Table Vi_Pham (Vi phạm)
+-- Lưu ý: chỉ một trong 2 cột car_id hoặc motorcycle_id sẽ được set tùy thuộc vào loại xe vi phạm
+CREATE TABLE vi_pham (
+  violation_id INT AUTO_INCREMENT PRIMARY KEY,
+  person_id INT,
+  car_id INT,
+  motorcycle_id INT,
+  thoi_gian_vi_pham DATETIME NOT NULL,
+  loai_vi_pham VARCHAR(255) NOT NULL,
+  mo_ta TEXT,
+  hinh_thuc_xu_phat VARCHAR(255),
+  so_tien_phat DECIMAL(10,2),
+  FOREIGN KEY (person_id) REFERENCES person(person_id),
+  FOREIGN KEY (car_id) REFERENCES car(carId),
+  FOREIGN KEY (motorcycle_id) REFERENCES motorcycle(motorcycleId)
+);
+
+-- Table Scan_Log (Lịch sử quét)
+CREATE TABLE scan_log (
+  scanId INT AUTO_INCREMENT PRIMARY KEY,
+  license_plate VARCHAR(20),
+  person_id INT,
+  scan_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  operator_scan_time DATETIME,
+  image_path VARCHAR(255),
+  confidence DECIMAL(5,2),
+  status VARCHAR(50),
+  FOREIGN KEY (person_id) REFERENCES person(person_id)
+);
