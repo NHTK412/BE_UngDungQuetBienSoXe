@@ -13,7 +13,7 @@ public class Car {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long CarId;
 
-    @Column(name = "Ten_mau_xe", nullable = false, length = 100)
+    @Column(name = "ten_mau_xe", nullable = false, length = 100)
     private String tenXeCar;
 
     @Column(name = "Bien_so_xe", nullable = false, length = 100)
@@ -22,7 +22,14 @@ public class Car {
     @Column(name = "mau_xe", nullable =  false, length = 100)
     private String mauXeCar;
 
-    @Column(name = "mau_bien_so", nullable = false, length = 100)
-    private String mauBienSoCar;
+    @Column(name = "brand_car", nullable = false, length = 100)
+    private String brandCar;
+
+    @Column(name = "ten_chu_xe_car", nullable = false, length = 100)
+    private String tenChuXeCar;
+
+    @Column(name = "lien_he_chu_so_huu", nullable = false, length = 100)
+    private String lienHeCar;
+
 
 }

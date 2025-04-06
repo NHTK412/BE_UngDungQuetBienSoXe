@@ -22,7 +22,12 @@ public class Motorcycle {
     @Column(name = "mau_xe", nullable =  false, length = 100)
     private String mauXe;
 
-    @Column(name = "mau_bien_so", nullable = false, length = 100)
-    private String mauBienSo;
+    @Column(name = "brand_motor", nullable = false, length = 100)
+    private String brandMotor;       
 
+    @Column(name = "ten_chu_xe_motor", nullable = false, length = 100)
+    private String tenChuXeMotor;
+
+    @Column(name = "lien_he_chu_so_huu", nullable = false, length = 100)
+    private String lienHeMotor;
 }
