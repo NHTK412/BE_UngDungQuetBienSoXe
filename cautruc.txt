@@ -1,58 +1,68 @@
 licenseplate-backend/
 ├── pom.xml                         // File cấu hình Maven
-├── README.md                       // Tài liệu mô tả dự án
+├── README.md                       // Tài liệu dự án
 └── src
     ├── main
     │   ├── java
     │   │   └── com
     │   │       └── example
     │   │           └── licenseplate
-    │   │               ├── LicensePlateApplication.java      // Main chạy Spring Boot
+    │   │               ├── LicensePlateApplication.java      // Main ứng dụng Spring Boot
     │   │               ├── config
     │   │               │   └── SecurityConfig.java             // Cấu hình bảo mật (JWT, CORS,…)
     │   │               ├── controller
-    │   │               │   ├── AuthController.java             // Đăng nhập/đăng ký (JWT)
-    │   │               │   ├── UserController.java             // CRUD cho người dùng (tất cả)
-    │   │               │   ├── AdminController.java            // CRUD cho admin (chỉ admin)
-    │   │               │   ├── ScanController.java             // Endpoint quét biển số (nhận file, …)
-    │   │               │   └── VehicleController.java          // CRUD cho xe: Car & Motorcycle
+    │   │               │   ├── AuthController.java             // API đăng nhập/đăng ký (JWT)
+    │   │               │   ├── AccountController.java            // (CRUD cho tài khoản, lịch sử đăng nhập, …)
+    │   │               │   ├── PersonController.java             // CRUD cho thông tin người dân
+    │   │               │   ├── VehicleController.java            // CRUD cho xe: Car & Motorcycle (em Phú)
+    │   │               │   ├── ViolationController.java          // CRUD cho vi phạm (cho xe hơi và xe máy)
+    │   │               │   └── ScanLogController.java            // CRUD cho lịch sử quét (car_scan_logs, motorcycle_scan_logs)
     │   │               ├── dto
-    │   │               │   ├── JwtResponse.java                // DTO trả về JWT và thông tin user
+    │   │               │   ├── JwtResponse.java                // DTO trả về token & thông tin tài khoản
     │   │               │   ├── SignInRequest.java              // DTO đăng nhập
-    │   │               │   ├── SignUpRequest.java              // DTO đăng ký người dùng
+    │   │               │   ├── SignUpRequest.java              // DTO đăng ký tài khoản (USER)
     │   │               │   ├── AdminSignUpRequest.java         // DTO đăng ký admin
     │   │               │   └── AdminUpdateRequest.java         // DTO cập nhật admin
     │   │               ├── filter
-    │   │               │   ├── JwtAuthenticationFilter.java    // Bộ lọc JWT
-    │   │               │   └── WhitelistFilter.java            // Bộ lọc bỏ qua URL công khai
+    │   │               │   ├── JwtAuthenticationFilter.java    // Bộ lọc JWT cho request
+    │   │               │   └── WhitelistFilter.java            // Bộ lọc URL công khai
     │   │               ├── model
-    │   │               │   ├── ERole.java                      // Enum vai trò (ROLE_USER, ROLE_ADMIN, …)
-    │   │               │   ├── Role.java                       // Entity bảng roles
-    │   │               │   ├── User.java                       // Entity bảng users
-    │   │               │   ├── Car.java                        // Entity bảng xe hơi
-    │   │               │   ├── Motorcycle.java                 // Entity bảng xe 2 bánh
-    │   │               │   ├── Person.java                     // Entity bảng person (người dân)
-    │   │               │   ├── ViPham.java                     // Entity bảng vi phạm
-    │   │               │   └── ScanLog.java                    // Entity bảng lịch sử quét (có thể chứa tham chiếu đến Person)
+    │   │               │   ├── ERole.java                      // Enum vai trò (USER, ADMIN, MODERATOR)
+    │   │               │   ├── Account.java                    // Entity ánh xạ bảng account
+    │   │               │   ├── LoginHistory.java               // Entity ánh xạ bảng login_history
+    │   │               │   ├── Person.java                     // Entity ánh xạ bảng person
+    │   │               │   ├── Gender.java                     // Enum giới tính (MALE, FEMALE)
+    │   │               │   ├── Car.java                        // Entity ánh xạ bảng car(Phú)
+    │   │               │   ├── Motorcycle.java                 // Entity ánh xạ bảng motorcycle(Phú)
+    │   │               │   ├── FaceData.java                   // Entity ánh xạ bảng face_data
+    │   │               │   ├── CarViolation.java               // Entity ánh xạ bảng car_violations
+    │   │               │   ├── MotorcycleViolation.java        // Entity ánh xạ bảng motorcycle_violations
+    │   │               │   ├── CarScanLog.java                 // Entity ánh xạ bảng car_scan_logs
+    │   │               │   └── MotorcycleScanLog.java          // Entity ánh xạ bảng motorcycle_scan_logs
     │   │               ├── repository
-    │   │               │   ├── RoleRepository.java             // Repository cho Role
-    │   │               │   ├── UserRepository.java             // Repository cho User
-    │   │               │   ├── CarRepository.java              // Repository cho Car
-    │   │               │   ├── MotorcycleRepository.java       // Repository cho Motorcycle
-    │   │               │   ├── PersonRepository.java           // Repository cho Person
-    │   │               │   ├── ViPhamRepository.java           // Repository cho ViPham
-    │   │               │   └── ScanLogRepository.java          // Repository cho ScanLog
+    │   │               │   ├── AccountRepository.java          // Repository cho account
+    │   │               │   ├── LoginHistoryRepository.java       // Repository cho login_history
+    │   │               │   ├── PersonRepository.java           // Repository cho person
+    │   │               │   ├── CarRepository.java              // Repository cho car(Phú)
+    │   │               │   ├── MotorcycleRepository.java       // Repository cho motorcycle(Phú)
+    │   │               │   ├── FaceDataRepository.java         // Repository cho face_data
+    │   │               │   ├── CarViolationRepository.java     // Repository cho car_violations
+    │   │               │   ├── MotorcycleViolationRepository.java// Repository cho motorcycle_violations
+    │   │               │   ├── CarScanLogRepository.java         // Repository cho car_scan_logs
+    │   │               │   └── MotorcycleScanLogRepository.java  // Repository cho motorcycle_scan_logs
     │   │               ├── service
     │   │               │   ├── AuthEntryPointJwt.java          // Xử lý lỗi xác thực
     │   │               │   ├── UserDetailsImpl.java            // Cài đặt UserDetails
-    │   │               │   ├── UserDetailsServiceImpl.java     // Tải user từ DB
-    │   │               │   ├── UserService.java                // Nghiệp vụ CRUD user
-    │   │               │   ├── ScanService.java                // Nghiệp vụ xử lý quét
-    │   │               │   └── VehicleService.java             // Nghiệp vụ CRUD cho xe (Car, Motorcycle)
+    │   │               │   ├── UserDetailsServiceImpl.java     // Tải thông tin tài khoản từ DB
+    │   │               │   ├── AccountService.java             // Nghiệp vụ CRUD cho account
+    │   │               │   ├── PersonService.java              // Nghiệp vụ CRUD cho person
+    │   │               │   ├── VehicleService.java             // Nghiệp vụ CRUD cho xe (Car & Motorcycle)(Phú)
+    │   │               │   ├── ViolationService.java           // Nghiệp vụ CRUD cho vi phạm
+    │   │               │   └── ScanLogService.java             // Nghiệp vụ CRUD cho lịch sử quét
     │   │               └── util
     │   │                   └── JwtUtil.java                    // Tiện ích tạo & xác thực JWT
     │   └── resources
-    │       └── application.properties                        // Cấu hình (DB, jwt, …)
+    │       └── application.yaml                        // Cấu hình ứng dụng (DB, jwt, …)
     └── test
         └── java
             └── com
