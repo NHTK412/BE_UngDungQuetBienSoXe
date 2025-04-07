@@ -1,33 +1,66 @@
 package com.example.licenseplate.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Motorcycle")
-@Data
-@NoArgsConstructor
+@Table(name = "motorcycle")
 public class Motorcycle {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long MotorcycleId;
+    private Long id;
 
-    @Column(name = "Ten_mau_xe", nullable = false, length = 100)
-    private String tenXe;
+    @Column(name = "license_plate", nullable = false, unique = true)
+    private String licensePlate;
 
-    @Column(name = "Bien_so_xe", nullable = false, length = 100)
-    private String bienSo;
+    @Column(name = "brand")
+    private String brand;
 
-    @Column(name = "mau_xe", nullable =  false, length = 100)
-    private String mauXe;
+    @Column(name = "color")
+    private String color;
 
-    @Column(name = "brand_motor", nullable = false, length = 100)
-    private String brandMotor;       
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    private Person owner;
 
-    @Column(name = "ten_chu_xe_motor", nullable = false, length = 100)
-    private String tenChuXeMotor;
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
 
-    @Column(name = "lien_he_chu_so_huu", nullable = false, length = 100)
-    private String lienHeMotor;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public Person getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Person owner) {
+        this.owner = owner;
+    }
 }

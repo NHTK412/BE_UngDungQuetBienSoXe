@@ -1,35 +1,66 @@
 package com.example.licenseplate.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Car")
-@Data
-@NoArgsConstructor
+@Table(name = "car")
 public class Car {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long CarId;
+    private Long id;
 
-    @Column(name = "ten_mau_xe", nullable = false, length = 100)
-    private String tenXeCar;
+    @Column(name = "license_plate", nullable = false, unique = true)
+    private String licensePlate;
 
-    @Column(name = "Bien_so_xe", nullable = false, length = 100)
-    private String bienSoCar;
+    @Column(name = "brand")
+    private String brand;
 
-    @Column(name = "mau_xe", nullable =  false, length = 100)
-    private String mauXeCar;
+    @Column(name = "color")
+    private String color;
 
-    @Column(name = "brand_car", nullable = false, length = 100)
-    private String brandCar;
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    private Person owner;
 
-    @Column(name = "ten_chu_xe_car", nullable = false, length = 100)
-    private String tenChuXeCar;
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
 
-    @Column(name = "lien_he_chu_so_huu", nullable = false, length = 100)
-    private String lienHeCar;
+    public void setId(Long id) {
+        this.id = id;
+    }
 
+    public String getLicensePlate() {
+        return licensePlate;
+    }
 
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public Person getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Person owner) {
+        this.owner = owner;
+    }
 }
