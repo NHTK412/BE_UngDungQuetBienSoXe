@@ -16,6 +16,9 @@ public class Motorcycle {
     @Column(name = "brand")
     private String brand;
 
+    @Column(name = "model") 
+    private String model;
+
     @Column(name = "color")
     private String color;
 
@@ -48,6 +51,14 @@ public class Motorcycle {
         this.brand = brand;
     }
 
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+    
     public String getColor() {
         return color;
     }
