@@ -3,16 +3,18 @@ package com.example.licenseplate.controller;
 import com.example.licenseplate.model.Person;
 import com.example.licenseplate.repository.PersonRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/person")
+@PreAuthorize("isAuthenticated()")
 public class PersonController {
 
-    private final PersonRepository personRepository;
+    private final com.example.licenseplate.repository.PersonRepository personRepository;
 
-    public PersonController(PersonRepository personRepository) {
+    public PersonController(com.example.licenseplate.repository.PersonRepository personRepository) {
         this.personRepository = personRepository;
     }
 
