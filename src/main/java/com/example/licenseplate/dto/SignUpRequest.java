@@ -8,18 +8,18 @@ import lombok.Data;
 @Data
 public class SignUpRequest {
     @NotBlank(message = "CCCD is required")
-    @Size(min = 12, max = 12)
+    @Size(min = 12, max = 12, message = "CCCD must be exactly 12 digits")
     private String id;
 
     @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 20)
+    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
     private String username;
 
     @NotBlank(message = "Email is required")
-    @Email
+    @Email(message = "Email is not valid")
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6)
+    @Size(min = 6, message = "Password must have at least 6 characters")
     private String password;
 }

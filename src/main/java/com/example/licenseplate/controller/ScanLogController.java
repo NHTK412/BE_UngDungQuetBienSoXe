@@ -2,10 +2,12 @@ package com.example.licenseplate.controller;
 
 import com.example.licenseplate.service.ScanLogService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/scan_logs")
+@PreAuthorize("isAuthenticated()")
 public class ScanLogController {
 
     private final ScanLogService scanLogService;

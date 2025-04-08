@@ -5,10 +5,12 @@ import com.example.licenseplate.model.MotorcycleViolation;
 import com.example.licenseplate.service.ViolationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/violations")
+@PreAuthorize("isAuthenticated()")
 public class ViolationController {
 
     private final ViolationService violationService;

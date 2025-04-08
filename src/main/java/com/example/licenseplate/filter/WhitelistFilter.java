@@ -15,8 +15,7 @@ public class WhitelistFilter extends OncePerRequestFilter {
 
     private static final List<String> WHITELIST = Arrays.asList(
             "/api/auth/signup",
-            "/api/auth/signin",
-            "/api/scan"
+            "/api/auth/signin"
     );
 
     @Override
