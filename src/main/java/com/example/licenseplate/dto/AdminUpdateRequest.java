@@ -8,14 +8,13 @@ import lombok.Data;
 @Data
 public class AdminUpdateRequest {
     @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
+    @Size(min = 3, max = 20)
     private String username;
 
     @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email address")
+    @Email
     private String email;
 
-    // Mật khẩu là tùy chọn khi cập nhật
-    @Size(min = 6, message = "Password must have at least 6 characters")
+    @Size(min = 6)
     private String password;
 }
