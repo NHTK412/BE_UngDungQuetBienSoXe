@@ -28,9 +28,9 @@ public class VehicleController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/cars/{id}")
-    public ResponseEntity<Car> getCarById(@PathVariable Integer id) {
-        return vehicleService.getCarById(id)
+    @GetMapping("/cars/{licensePlate}")
+    public ResponseEntity<Car> getCarByLicensePlate(@PathVariable String licensePlate) {
+        return vehicleService.getCarByLicensePlate(licensePlate)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -42,9 +42,9 @@ public class VehicleController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/motorcycles/{id}")
-    public ResponseEntity<Motorcycle> getMotorcycleById(@PathVariable Integer id) {
-        return vehicleService.getMotorcycleById(id)
+    @GetMapping("/motorcycles/{licensePlate}")
+    public ResponseEntity<Motorcycle> getMotorcycleByLicensePlate(@PathVariable String licensePlate) {
+        return vehicleService.getMotorcycleByLicensePlate(licensePlate)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -58,16 +58,16 @@ public class VehicleController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("/cars/{id}")
-    public ResponseEntity<Car> updateCar(@PathVariable Integer id, @RequestBody Car car) {
-        Car updated = vehicleService.updateCar(id, car);
+    @PutMapping("/cars/{licensePlate}")
+    public ResponseEntity<Car> updateCar(@PathVariable String licensePlate, @RequestBody Car car) {
+        Car updated = vehicleService.updateCar(licensePlate, car);
         return ResponseEntity.ok(updated);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping("/cars/{id}")
-    public ResponseEntity<Void> deleteCar(@PathVariable Integer id) {
-        vehicleService.deleteCar(id);
+    @DeleteMapping("/cars/{licensePlate}")
+    public ResponseEntity<Void> deleteCar(@PathVariable String licensePlate) {
+        vehicleService.deleteCar(licensePlate);
         return ResponseEntity.noContent().build();
     }
 
@@ -79,16 +79,16 @@ public class VehicleController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("/motorcycles/{id}")
-    public ResponseEntity<Motorcycle> updateMotorcycle(@PathVariable Integer id, @RequestBody Motorcycle motorcycle) {
-        Motorcycle updated = vehicleService.updateMotorcycle(id, motorcycle);
+    @PutMapping("/motorcycles/{licensePlate}")
+    public ResponseEntity<Motorcycle> updateMotorcycle(@PathVariable String licensePlate, @RequestBody Motorcycle motorcycle) {
+        Motorcycle updated = vehicleService.updateMotorcycle(licensePlate, motorcycle);
         return ResponseEntity.ok(updated);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping("/motorcycles/{id}")
-    public ResponseEntity<Void> deleteMotorcycle(@PathVariable Integer id) {
-        vehicleService.deleteMotorcycle(id);
+    @DeleteMapping("/motorcycles/{licensePlate}")
+    public ResponseEntity<Void> deleteMotorcycle(@PathVariable String licensePlate) {
+        vehicleService.deleteMotorcycle(licensePlate);
         return ResponseEntity.noContent().build();
     }
 }
