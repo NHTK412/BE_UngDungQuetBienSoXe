@@ -20,6 +20,7 @@ public class MotorcycleScanLog {
     @Column(name = "license_plate", nullable = false, length = 20)
     private String licensePlate;
 
+    //account
     @Column(name = "operator_id", length = 12, nullable = false)
     private String operatorId;
 

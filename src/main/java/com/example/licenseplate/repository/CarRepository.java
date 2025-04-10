@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface CarRepository extends JpaRepository<Car, Integer> {
     Optional<Car> findByLicensePlate(String licensePlate);
+
+    void deleteByLicensePlate(String licensePlate);
 }
