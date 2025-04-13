@@ -29,4 +29,8 @@ public class Person {
 
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
+
+
+    @Column(name = "face_path", length = 255)
+    private String facePath;
 }
