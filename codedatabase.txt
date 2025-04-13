@@ -51,34 +51,7 @@ CREATE TABLE motorcycle (
     FOREIGN KEY (owner_id) REFERENCES person(id)
 );
 
--- Table: face_data (Lưu dữ liệu khuôn mặt)
-CREATE TABLE face_data (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    person_id VARCHAR(12) NOT NULL,
-    tracking_id INT,
-    bounding_box_left FLOAT,
-    bounding_box_top FLOAT,
-    bounding_box_right FLOAT,
-    bounding_box_bottom FLOAT,
-    rotation_x FLOAT,
-    rotation_y FLOAT,
-    rotation_z FLOAT,
-    right_eye_open_probability FLOAT,
-    left_eye_open_probability FLOAT,
-    smiling_probability FLOAT,
-    left_eye_x FLOAT,
-    left_eye_y FLOAT,
-    right_eye_x FLOAT,
-    right_eye_y FLOAT,
-    nose_x FLOAT,
-    nose_y FLOAT,
-    mouth_left_x FLOAT,
-    mouth_left_y FLOAT,
-    mouth_right_x FLOAT,
-    mouth_right_y FLOAT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (person_id) REFERENCES person(id)
-);
+
 
 -- Table: car_violations (Vi phạm dành riêng cho xe hơi)
 CREATE TABLE car_violations (
