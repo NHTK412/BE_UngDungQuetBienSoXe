@@ -2,6 +2,13 @@ package com.example.licenseplate.controller;
 
 import com.example.licenseplate.model.Person;
 import com.example.licenseplate.repository.PersonRepository;
+
+import io.jsonwebtoken.io.IOException;
+
+import org.springframework.boot.autoconfigure.ssl.SslProperties.Bundles.Watch.File;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -56,4 +63,6 @@ public class PersonController {
         personRepository.deleteById(id);
         return ResponseEntity.ok("Person deleted successfully");
     }
+
+    
 }
