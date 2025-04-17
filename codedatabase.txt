@@ -109,15 +109,7 @@ CREATE TABLE motorcycle_scan_logs (
 
 -- Thêm các chỉ mục (indexes) để tối ưu truy vấn
 
--- Indexes cho bảng car_violations
-CREATE INDEX idx_car_violations_car_id ON car_violations(car_id);
-CREATE INDEX idx_car_violations_violator ON car_violations(violator_id);
-CREATE INDEX idx_car_violations_time ON car_violations(violation_time);
 
--- Indexes cho bảng motorcycle_violations
-CREATE INDEX idx_mc_violations_mc_id ON motorcycle_violations(motorcycle_id);
-CREATE INDEX idx_mc_violations_violator ON motorcycle_violations(violator_id);
-CREATE INDEX idx_mc_violations_time ON motorcycle_violations(violation_time);
 
 -- Indexes cho bảng car_scan_logs
 CREATE INDEX idx_car_scan_time ON car_scan_logs(scan_timestamp);
@@ -131,3 +123,68 @@ CREATE INDEX idx_mc_scan_plate ON motorcycle_scan_logs(license_plate);
 CREATE INDEX idx_car_owner ON car(owner_id);
 CREATE INDEX idx_motorcycle_owner ON motorcycle(owner_id);
 CREATE INDEX idx_face_person ON face_data(person_id);
+
+
+
+______________________________________________________________________________________________________________________
+Các table mới thêm vào:
+
+
+-- Tạo mới table car_violations-report
+CREATE TABLE car_violations_report (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    license_plate VARCHAR(20) NOT NULL,
+    violator_id VARCHAR(12) NOT NULL, -- Thống nhất độ dài với person.id
+    officer_id VARCHAR(12) NOT NULL,  -- Thống nhất độ dài với account.id
+    report_time DATETIME NOT NULL,
+    report_location TEXT NOT NULL,
+    penalty_type TEXT NOT NULL,
+    resolution_deadline DATETIME NOT NULL,
+    -- Khóa ngoại liên kết đến bảng car qua biển số
+    FOREIGN KEY (license_plate) REFERENCES car(license_plate),
+    -- Khóa ngoại liên kết đến người vi phạm (person)
+    FOREIGN KEY (violator_id) REFERENCES person(id),
+    -- Khóa ngoại liên kết đến tài khoản cán bộ xử lý (account)
+    FOREIGN KEY (officer_id) REFERENCES account(id)
+);
+
+
+-- Tạo mới table car_violation_details
+CREATE TABLE car_violation_details (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    violation_id INT NOT NULL,
+    violation_type VARCHAR(100) NOT NULL,
+    fine_amount DECIMAL(12, 2) NOT NULL,
+    FOREIGN KEY (violation_id) REFERENCES car_violations_report(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE motorcycle_violations_report (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    license_plate VARCHAR(20) NOT NULL,
+    violator_id VARCHAR(12) NOT NULL, -- Thống nhất độ dài với person.id
+    officer_id VARCHAR(12) NOT NULL,  -- Thống nhất độ dài với account.id
+    report_time DATETIME NOT NULL,
+    report_location TEXT NOT NULL,
+    penalty_type TEXT NOT NULL,
+    resolution_deadline DATETIME NOT NULL,
+    -- Khóa ngoại liên kết đến bảng motorcycle qua biển số
+    FOREIGN KEY (license_plate) REFERENCES motorcycle(license_plate),
+    -- Khóa ngoại liên kết đến người vi phạm (person)
+    FOREIGN KEY (violator_id) REFERENCES person(id),
+    -- Khóa ngoại liên kết đến tài khoản cán bộ xử lý (account)
+    FOREIGN KEY (officer_id) REFERENCES account(id)
+);
+
+
+-- Tạo mới table car_violation_details
+CREATE TABLE motorcycle_violation_details (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    violation_id INT NOT NULL,
+    violation_type VARCHAR(100) NOT NULL,
+    fine_amount DECIMAL(12, 2) NOT NULL,
+    FOREIGN KEY (violation_id) REFERENCES motorcycle_violations_report(id) ON DELETE CASCADE
+);
+
+
+--> Xóa table: motorcycle_violation , car_violation , face_data ( Minh điều chỉnh lại xóa bớt mấy file code liên quan tới mấy table này nha)
