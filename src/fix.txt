@@ -1,0 +1,27 @@
+java/com/example/licenseplate/
+├── config/
+│   ├── AppConfig.java
+│   └── SecurityConfig.java
+├── controller/
+│   └── CarViolationController.java
+├── dto/
+│   └── CarViolationDto.java
+├── exception/
+│   ├── GlobalExceptionHandler.java
+│   └── ResourceNotFoundException.java
+├── filter/
+│   ├── JwtAuthenticationFilter.java
+│   └── WhitelistFilter.java
+├── model/
+│   ├── CarViolationDetail.java
+│   └── CarViolationsReport.java
+├── repository/
+│   ├── CarViolationDetailRepository.java
+│   └── CarViolationsReportRepository.java
+├── service/
+│   ├── AuthEntryPointJwt.java
+│   ├── CarViolationService.java
+│   └── UserDetailsServiceImpl.java
+├── util/
+│   └── JwtUtil.java
+└── LicenseplateApplication.java

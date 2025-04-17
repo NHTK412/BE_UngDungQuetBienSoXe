@@ -8,4 +8,5 @@ public interface CarRepository extends JpaRepository<Car, Integer> {
     Optional<Car> findByLicensePlate(String licensePlate);
 
     void deleteByLicensePlate(String licensePlate);
+    boolean existsByLicensePlate(String licensePlate); // Dòng này mới thêm vào: 8h48 ngày 17/04/2025
 }
