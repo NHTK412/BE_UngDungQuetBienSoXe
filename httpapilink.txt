@@ -116,6 +116,24 @@ quet/api/vehicles/cars/licensePlate"
   "operatorId": "987654321098"(for account)
 }
 
------
+_________________________________________________________________________________________________________________________________
+
+Cách dùng của 2 endpoint mới:
+
+http://localhost:8087/quet/api/auth/logout/:accountId
+
+--> Gửi kèm URL id của account hiện tại cần logout
+
+http://localhost:8087/quet/api/auth/login-history
+
+--> Gửi lên body có như sau: 
+    {
+      "accountId" : "058205002155",
+      "ipAddress": "192.168.1.1",
+      "deviceInfo": "Chrome - Windows",
+      "loginStatus": "SUCCESS"
+    }
+
+_________________________________________________________________________________________________________________________________
 
 
