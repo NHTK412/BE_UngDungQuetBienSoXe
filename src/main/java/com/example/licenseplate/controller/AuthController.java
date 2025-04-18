@@ -2,6 +2,7 @@ package com.example.licenseplate.controller;
 
 import com.example.licenseplate.dto.JwtResponse;
 import com.example.licenseplate.dto.LoginHistoryRequest;
+import com.example.licenseplate.dto.LogoutResponse;
 import com.example.licenseplate.dto.SignInRequest;
 import com.example.licenseplate.dto.SignUpRequest;
 import com.example.licenseplate.model.Account;
@@ -126,17 +127,19 @@ public class AuthController {
 
     // @PatchMapping("/logout/{accountId}")
     @PatchMapping("/logout/{accountId}")
-    public ResponseEntity<?> logout(@PathVariable String accountId) {
+    public ResponseEntity<LogoutResponse> logout(@PathVariable String accountId) {
         try {
             LoginHistory loggedOutSession = loginHistoryService.logoutUser(accountId);
-            return ResponseEntity.ok("Đã ghi nhận đăng xuất thành công");
+            return ResponseEntity.ok(new LogoutResponse(1, "Đã ghi nhận đăng xuất thành công")); // Trả về json 
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new LogoutResponse(0, e.getMessage())); // Trả về json 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Không thể ghi nhận đăng xuất: " + e.getMessage());
+                    .body(new LogoutResponse(0, "Không thể ghi nhận đăng xuất: " + e.getMessage())); // Trả về json 
         }
     }
+
     // New endpoint to handle login
     // history___________________________________________________________________________
 }
