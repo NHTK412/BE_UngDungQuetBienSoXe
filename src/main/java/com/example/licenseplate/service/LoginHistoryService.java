@@ -4,6 +4,7 @@
 package com.example.licenseplate.service;
 
 import com.example.licenseplate.dto.LoginHistoryRequest;
+import com.example.licenseplate.model.Account;
 import com.example.licenseplate.model.LoginHistory;
 import com.example.licenseplate.repository.AccountRepository;
 import com.example.licenseplate.repository.LoginHistoryRepository;
@@ -32,9 +33,16 @@ public class LoginHistoryService {
 
     @Transactional
     public LoginHistory createLoginHistory(LoginHistoryRequest request) {
-        // Xác thực tài khoản tồn tại
-        if (!accountRepository.existsById(request.getAccountId())) {
-            throw new EntityNotFoundException("Account ID " + request.getAccountId() + " does not exist");
+        // Update 10:25 ngày 18 tháng 4 năm 2025
+        // _________________________________________________________________________________________
+        Account account = accountRepository.findById(request.getAccountId())
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Account ID " + request.getAccountId() + " does not exist"));
+
+        // Nếu trạng thái đăng nhập là thành công → cập nhật lastLogin
+        if ("SUCCESS".equalsIgnoreCase(request.getLoginStatus())) {
+            account.setLastLogin(LocalDateTime.now());
+            accountRepository.save(account);
         }
 
         // Tạo đối tượng lịch sử đăng nhập
@@ -45,8 +53,10 @@ public class LoginHistoryService {
         loginHistory.setDeviceInfo(request.getDeviceInfo());
         loginHistory.setLoginStatus(request.getLoginStatus());
 
-        // Lưu vào cơ sở dữ liệu
+        // Lưu lịch sử đăng nhập
         return loginHistoryRepository.save(loginHistory);
+        // _________________________________________________________________________________________
+
     }
 
     @Transactional(readOnly = true)
