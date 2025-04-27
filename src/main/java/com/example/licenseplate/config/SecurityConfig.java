@@ -69,7 +69,7 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .anyRequest().authenticated());
-                        // Điều chỉnh chỗ này _____________________________________________
+        // Điều chỉnh chỗ này _____________________________________________
 
         http.addFilterBefore(whitelistFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(jwtAuthenticationFilter, WhitelistFilter.class);

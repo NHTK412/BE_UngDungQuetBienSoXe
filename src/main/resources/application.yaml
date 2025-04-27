@@ -15,7 +15,9 @@ spring:
 jwt:
   signerKey: "JxPPEpsMOmZsehp90kBaENU4t/MWgOP5m3G641l+Gx3dbh5sawYy6iKhsJLh3iJvGTiJhwoOU/MDhopdEllQDvSlatdIYMs4RJq9k1A9g2w="
   valid-duration: 3600  # thời gian hợp lệ của token tính bằng giây
-# em khang thêm url python (REST API)
 python:
   service:
     url: http://127.0.0.1:8000/
+app:
+  image:
+    directory: "D:/Programming_Language/Python/LearingFastAPI/imgmatch_api/Data/"
