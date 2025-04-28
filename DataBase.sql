@@ -5,8 +5,8 @@ use traffic_management_system;
 
 CREATE TABLE account (
   id varchar(12) NOT NULL,
-  username varchar(255) NOT NULL,
-  email varchar(255) NOT NULL,
+  username varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  email varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   password varchar(255) NOT NULL,
   role enum('USER','ADMIN','MODERATOR') NOT NULL DEFAULT 'USER',
   last_login datetime DEFAULT NULL,
@@ -15,6 +15,7 @@ CREATE TABLE account (
   UNIQUE KEY username (username),
   UNIQUE KEY email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 CREATE TABLE person (
   id varchar(12) NOT NULL,
@@ -169,5 +170,7 @@ VALUES
 INSERT INTO motorcycle(license_plate,brand,color,owner_id)
 VALUES 
 ("85C140689", "Honda","Red", "058205002155");
- 
+
+
+
 
