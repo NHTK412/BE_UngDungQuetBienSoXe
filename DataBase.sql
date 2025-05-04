@@ -162,10 +162,33 @@ CREATE TABLE motorcycle_violation_details (
   CONSTRAINT motorcycle_violation_details_ibfk_1 FOREIGN KEY (violation_id) REFERENCES motorcycle_violations_report (id) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- New thêm table bằng lái xe - 13h22 - 04/05/2025
+CREATE TABLE driving_license (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  license_number VARCHAR(20) NOT NULL UNIQUE,
+  person_id VARCHAR(12) NOT NULL,
+  issue_date DATE NOT NULL,
+  expiry_date DATE NOT NULL,
+  license_class VARCHAR(10) NOT NULL,  -- Ví dụ: A1, B2, C
+  place_of_issue VARCHAR(100),
+  status ENUM('VALID', 'EXPIRED', 'SUSPENDED') DEFAULT 'VALID',
+
+  CONSTRAINT fk_driving_license_person FOREIGN KEY (person_id)
+    REFERENCES person(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB 
+  DEFAULT CHARSET=utf8mb4 
+  COLLATE=utf8mb4_0900_ai_ci;
+
 -- TRUYỀN DATA
 INSERT INTO person
 VALUES
 ('058205002155', 'Nguyễn Hữu Tuấn Khang', '2005-12-04', 'MALE', 'Binh Duong', '0366408263', '058205002155.jpg');
+
+-- INSERT INTO driving_license
+-- VALUES
+
 
 INSERT INTO motorcycle(license_plate,brand,color,owner_id)
 VALUES 
