@@ -12,35 +12,36 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.ResponseEntity;
 import java.util.Optional;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/driving-license")
 @PreAuthorize("isAuthenticated()")
 public class DrivingLicenseController {
-    
+
     // Inject repository
     @Autowired
     private DrivingLicenseRepository drivingLicenseRepository;
-    
+
     @GetMapping("/license/{licenseNumber}")
-    public ResponseEntity<DrivingLicense> getDrivingLicenseByLicenseNumber(@PathVariable String licenseNumber) {
+    public ResponseEntity<List<DrivingLicense>> getDrivingLicenseByLicenseNumber(@PathVariable String licenseNumber) {
         // Tìm kiếm giấy phép lái xe theo licenseNumber
-        Optional<DrivingLicense> drivingLicenseOptional = drivingLicenseRepository.findByLicenseNumber(licenseNumber);
-        
+        List<DrivingLicense> listDrivingLicense = drivingLicenseRepository.findByLicenseNumber(licenseNumber);
+
         // Kiểm tra xem có tìm thấy giấy phép lái xe không
-        if (drivingLicenseOptional.isPresent()) {
-            return ResponseEntity.ok(drivingLicenseOptional.get());
+        if (listDrivingLicense.size() != 0) {
+            return ResponseEntity.ok(listDrivingLicense);
         } else {
             return ResponseEntity.notFound().build(); // Trả về mã 404 nếu không tìm thấy
         }
     }
-    
+
     @GetMapping("/person/{personId}")
-    public ResponseEntity<DrivingLicense> getDrivingLicenseByPersonId(@PathVariable String personId) {
-        Optional<DrivingLicense> drivingLicenseOptional = drivingLicenseRepository.findByPersonId(personId);
-        
-        if (drivingLicenseOptional.isPresent()) {
-            return ResponseEntity.ok(drivingLicenseOptional.get());
+    public ResponseEntity<List<DrivingLicense>> getDrivingLicenseByPersonId(@PathVariable String personId) {
+        List<DrivingLicense> listDrivingLicense = drivingLicenseRepository.findByPersonId(personId);
+
+        if (listDrivingLicense.size() != 0 ) {
+            return ResponseEntity.ok(listDrivingLicense);
         } else {
             return ResponseEntity.notFound().build();
         }

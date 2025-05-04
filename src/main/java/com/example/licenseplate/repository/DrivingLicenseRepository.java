@@ -3,13 +3,15 @@ package com.example.licenseplate.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.licenseplate.model.DrivingLicense;
 import java.util.Optional;
+import java.util.List;
+
 
 
 
 public interface DrivingLicenseRepository extends JpaRepository<DrivingLicense, Integer> {
     
-    Optional<DrivingLicense> findByLicenseNumber(String licenseNumber);
+    List<DrivingLicense> findByLicenseNumber(String licenseNumber);
    
-    Optional<DrivingLicense> findByPersonId(String personId);
+    List<DrivingLicense> findByPersonId(String personId);
 }
 
