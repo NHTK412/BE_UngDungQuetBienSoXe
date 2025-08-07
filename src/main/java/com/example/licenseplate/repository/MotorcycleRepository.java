@@ -8,4 +8,6 @@ public interface MotorcycleRepository extends JpaRepository<Motorcycle, Integer>
     Optional<Motorcycle> findByLicensePlate(String licensePlate);
 
     void deleteByLicensePlate(String licensePlate);
+
+    boolean existsByLicensePlate(String licensePlate);
 }

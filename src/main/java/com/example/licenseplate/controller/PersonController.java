@@ -1,7 +1,7 @@
 package com.example.licenseplate.controller;
 
 import com.example.licenseplate.model.Person;
-import com.example.licenseplate.repository.PersonRepository;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -56,4 +56,6 @@ public class PersonController {
         personRepository.deleteById(id);
         return ResponseEntity.ok("Person deleted successfully");
     }
+
+    
 }

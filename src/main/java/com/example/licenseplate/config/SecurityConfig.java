@@ -27,9 +27,9 @@ public class SecurityConfig {
     private final WhitelistFilter whitelistFilter;
 
     public SecurityConfig(UserDetailsServiceImpl userDetailsService,
-                          AuthEntryPointJwt authEntryPointJwt,
-                          JwtAuthenticationFilter jwtAuthenticationFilter,
-                          WhitelistFilter whitelistFilter) {
+            AuthEntryPointJwt authEntryPointJwt,
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            WhitelistFilter whitelistFilter) {
         this.userDetailsService = userDetailsService;
         this.authEntryPointJwt = authEntryPointJwt;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -47,7 +47,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(org.springframework.security.config.annotation.web.builders.HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(
+            org.springframework.security.config.annotation.web.builders.HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
@@ -62,9 +63,13 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPointJwt))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/test/**").permitAll()
-                        .anyRequest().authenticated()
-                );
+                        // Điều chỉnh chỗ này _____________________________________________
+                        // Các endpoint public được phép truy cập
+                        .requestMatchers("/api/auth/signin", "/api/auth/signup", "/api/auth/login-history/**")
+                        .permitAll()
+                        .requestMatchers("/api/test/**").permitAll()
+                        .anyRequest().authenticated());
+        // Điều chỉnh chỗ này _____________________________________________
 
         http.addFilterBefore(whitelistFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(jwtAuthenticationFilter, WhitelistFilter.class);

@@ -16,6 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * Controller xử lý các yêu cầu nhận dạng khuôn mặt
+ * Đảm bảo người dùng đã xác thực trước khi truy cập các API
+ */
 @RestController
 @RequestMapping("/api/face-recognition")
 @PreAuthorize("isAuthenticated()")
@@ -25,31 +29,42 @@ public class FaceRecognitionController {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
+    // URL dịch vụ Python lấy từ cấu hình application.yml
     @Value("${python.service.url}")
     private String pythonServiceUrl;
 
-    public FaceRecognitionController(PersonService personService, RestTemplate restTemplate, ObjectMapper objectMapper) {
+    /**
+     * Constructor với dependency injection
+     */
+    public FaceRecognitionController(PersonService personService, RestTemplate restTemplate,
+            ObjectMapper objectMapper) {
         this.personService = personService;
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * API nhận diện khuôn mặt từ ảnh
+     * 
+     * @param imageFile Ảnh chứa khuôn mặt cần nhận diện
+     * @return Thông tin người dùng nếu nhận diện thành công
+     */
     @PostMapping("/identify")
     public ResponseEntity<?> identifyPersonByFace(@RequestParam("image") MultipartFile imageFile) {
         try {
-            // 1. Validate the uploaded file
+            // 1. Kiểm tra tính hợp lệ của file ảnh
             if (imageFile.isEmpty()) {
                 return ResponseEntity.badRequest().body("Please upload an image file");
             }
 
-            // 2. Forward the image to Python service
+            // 2. Chuyển tiếp ảnh đến dịch vụ Python để nhận diện
             String cccdId = forwardImageToPythonService(imageFile);
             if (cccdId == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("No person identified in the image");
             }
 
-            // 3. Query the database for person information using the CCCD
+            // 3. Truy vấn cơ sở dữ liệu để lấy thông tin người dùng dựa trên số CCCD
             Optional<Person> person = personService.getPersonById(cccdId);
             if (person.isPresent()) {
                 return ResponseEntity.ok(person.get());
@@ -67,41 +82,69 @@ public class FaceRecognitionController {
         }
     }
 
+    /**
+     * Phương thức gửi ảnh đến dịch vụ Python và nhận về số CCCD
+     * 
+     * @param imageFile File ảnh cần gửi
+     * @return Số CCCD nếu nhận diện thành công, null nếu thất bại
+     */
     private String forwardImageToPythonService(MultipartFile imageFile) throws IOException {
-        // 1. Prepare HTTP headers
+        // 1. Chuẩn bị HTTP headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        // 2. Prepare the request body with the image file
+        // 2. Chuẩn bị body của request với file ảnh
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        // Create a resource from the file and add it to the body
-        body.add("image", new MultipartInputStreamFileResource(
+        // Tạo resource từ file và thêm vào body với tên trường là "file"
+        body.add("file", new MultipartInputStreamFileResource(
                 imageFile.getInputStream(),
-                imageFile.getOriginalFilename()
-        ));
+                imageFile.getOriginalFilename()));
 
-        // 3. Create the HTTP request
+        // 3. Tạo HTTP request
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        // 4. Send the request to the Python service
+        // 4. Gửi request đến dịch vụ Python
         ResponseEntity<String> response = restTemplate.postForEntity(
-                pythonServiceUrl + "/identify",
+                pythonServiceUrl + "/v1/match-image",
                 requestEntity,
-                String.class
-        );
+                String.class);
 
-        // 5. Process the JSON response
+        // 5. Xử lý JSON response
         if (response.getStatusCode() == HttpStatus.OK) {
             JsonNode root = objectMapper.readTree(response.getBody());
-            // Assuming the Python service returns JSON with a field "cccd"
-            if (root.has("cccd")) {
-                return root.get("cccd").asText();
+
+            // Kiểm tra trạng thái trả về
+            if (root.has("status") && "success".equals(root.get("status").asText())) {
+                // Kiểm tra xem có trường name (định danh CCCD) không
+                if (root.has("name")) {
+                    String cccdId = root.get("name").asText();
+
+                    // Thêm log để debug
+                    if (root.has("confidence")) {
+                        double confidence = root.get("confidence").asDouble();
+                        System.out.println("Detected face with confidence: " + confidence);
+
+                        // Giảm ngưỡng xuống 0.6 hoặc tùy chỉnh theo nhu cầu của bạn
+                        if (confidence < 0.6) {
+                            System.out.println("Confidence too low, below threshold");
+                            return null;
+                        }
+                    }
+
+                    return cccdId;
+                }
             }
         }
+
+        // Log toàn bộ phản hồi để debug
+        System.out.println("Python service response: " + response.getBody());
         return null;
     }
 
-    // Helper class to handle MultipartFile as a Resource
+    /**
+     * Lớp helper để xử lý MultipartFile như một Resource
+     * Cần thiết cho việc gửi file trong multipart request
+     */
     private static class MultipartInputStreamFileResource extends org.springframework.core.io.InputStreamResource {
         private final String filename;
 
@@ -117,7 +160,7 @@ public class FaceRecognitionController {
 
         @Override
         public long contentLength() {
-            // Returning -1 to avoid reading the stream twice
+            // Trả về -1 để tránh đọc stream hai lần
             return -1;
         }
     }
