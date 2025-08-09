@@ -1,7 +1,7 @@
 package com.example.licenseplate.controller;
 
 import com.example.licenseplate.dto.*;
-import com.example.licenseplate.service.accidentService;
+import com.example.licenseplate.service.AccidentService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/quet/api/accidents")
+@RequestMapping("/api/accidents")
 @Slf4j
-public class accidentController {
+public class AccidentController {
 
     @Autowired
-    private accidentService accidentService;
+    private AccidentService accidentService;
 
     /**
      * 2. Ghi Nhận Tai Nạn (Python → Java)
@@ -27,20 +27,19 @@ public class accidentController {
      */
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<accidentReportResponse> reportAccident(
-            @Valid @RequestBody accidentReportRequest request) {
+    public ResponseEntity<AccidentReportResponse> reportAccident(
+            @Valid @RequestBody AccidentReportRequest request) {
         try {
             log.info("Received accident report from camera: {}", request.getCameraId());
-            accidentReportResponse response = accidentService.reportAccident(request);
+            AccidentReportResponse response = accidentService.reportAccident(request);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error processing accident report", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new accidentReportResponse(
+                    .body(new AccidentReportResponse(
                             "Failed to report accident: " + e.getMessage(),
                             null,
-                            null
-                    ));
+                            null));
         }
     }
 
@@ -51,15 +50,20 @@ public class accidentController {
      */
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MODERATOR')")
-    public ResponseEntity<ApiResponse<List<accidentResponse>>> getAllAccidents() {
-        try {
-            List<accidentResponse> accidents = accidentService.getAllAccidents();
-            return ResponseEntity.ok(ApiResponse.success(accidents));
-        } catch (Exception e) {
-            log.error("Error getting all accidents", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("Failed to retrieve accidents: " + e.getMessage()));
-        }
+    public ResponseEntity<List<AccidentResponse>> getAllAccidents() {
+        // try {
+        List<AccidentResponse> accidents = accidentService.getAllAccidents();
+        // __________________
+        // return ResponseEntity.ok(ApiResponse.success(accidents));
+
+        return ResponseEntity.ok(accidents);
+
+        // } catch (Exception e) {
+        // log.error("Error getting all accidents", e);
+        // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        // .body(ApiResponse.error("Failed to retrieve accidents: " + e.getMessage()));
+
+        // }
     }
 
     /**
@@ -69,22 +73,38 @@ public class accidentController {
      */
     @GetMapping("/unit/{unitId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<List<accidentForUnitResponse>>> getAccidentsByUnitId(
+    public ResponseEntity<List<AccidentForUnitResponse>> getAccidentsByUnitId(
             @PathVariable String unitId) {
-        try {
-            log.info("Getting accidents for unit: {}", unitId);
-            List<accidentForUnitResponse> accidents = accidentService.getAccidentsByUnitId(unitId);
-            return ResponseEntity.ok(ApiResponse.success(accidents));
-        } catch (Exception e) {
-            log.error("Error getting accidents for unit: {}", unitId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("Failed to retrieve accidents: " + e.getMessage()));
-        }
+        // try {
+        // log.info("Getting accidents for unit: {}", unitId);
+        // List<accidentForUnitResponse> accidents =
+        // accidentService.getAccidentsByUnitId(unitId);
+        // return ResponseEntity.ok(ApiResponse.success(accidents));
+        // } catch (Exception e) {
+        // log.error("Error getting accidents for unit: {}", unitId, e);
+        // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        // .body(ApiResponse.error("Failed to retrieve accidents: " + e.getMessage()));
+        // }
+
+        // try {
+        List<AccidentForUnitResponse> accidents = accidentService.getAccidentsByUnitId(unitId);
+        // __________________
+        // return ResponseEntity.ok(ApiResponse.success(accidents));
+
+        return ResponseEntity.ok(accidents);
+
+        // } catch (Exception e) {
+        // log.error("Error getting all accidents", e);
+        // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        // .body(ApiResponse.error("Failed to retrieve accidents: " + e.getMessage()));
+
+        // }
     }
 
     /**
      * 5. Cập Nhật Trạng Thái Xử Lý Tai Nạn
-     * PUT http://localhost:8087/quet/api/accidents/{accident_id}/responder/{unit_id}
+     * PUT
+     * http://localhost:8087/quet/api/accidents/{accident_id}/responder/{unit_id}
      * Xác thực: JWT
      *
      * Trạng thái có thể có:
@@ -93,27 +113,56 @@ public class accidentController {
      * - arrived: đã đến
      * - cancelled: đã hủy
      */
-    @PutMapping("/{accidentId}/responder/{unitId}")
+    // @PutMapping("/{accidentId}/responder/{unitId}")
+    // @PreAuthorize("isAuthenticated()")
+    // public ResponseEntity<ApiResponse<String>> updateResponderStatus(
+    // @PathVariable Integer accidentId,
+    // @PathVariable String unitId,
+    // @Valid @RequestBody UpdateresponderStatusRequest request) {
+    // try {
+    // log.info("Updating responder status for unit: {} in accident: {} to status:
+    // {}",
+    // unitId, accidentId, request.getStatus());
+
+    // // Set accident ID từ path parameter vào request
+    // request.setAccidentId(accidentId);
+
+    // accidentService.updateResponderStatus(unitId, request);
+
+    // String message = String.format("Responder status updated to '%s' for unit %s
+    // in accident %d.",
+    // request.getStatus(), unitId, accidentId);
+    // return ResponseEntity.ok(ApiResponse.success(message));
+
+    // } catch (Exception e) {
+    // log.error("Error updating responder status for unit: {} in accident: {}",
+    // unitId, accidentId, e);
+    // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    // .body(ApiResponse.error("Failed to update status: " + e.getMessage()));
+    // }
+    // }
+
+    @PutMapping("/responder")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<String>> updateResponderStatus(
-            @PathVariable Integer accidentId,
-            @PathVariable String unitId,
+            // @PathVariable Integer accidentId,
+            // @PathVariable String unitId,
             @Valid @RequestBody UpdateresponderStatusRequest request) {
         try {
-            log.info("Updating responder status for unit: {} in accident: {} to status: {}",
-                    unitId, accidentId, request.getStatus());
+            // log.info("Updating responder status for unit: {} in accident: {} to status: {}",
+                    // unitId, accidentId, request.getStatus());
 
             // Set accident ID từ path parameter vào request
-            request.setAccidentId(accidentId);
+            // request.setAccidentId(accidentId);
 
-            accidentService.updateResponderStatus(unitId, request);
+            accidentService.updateResponderStatus(request);
 
             String message = String.format("Responder status updated to '%s' for unit %s in accident %d.",
-                    request.getStatus(), unitId, accidentId);
+                    request.getStatus(), request.getUnitId(), request.getAccidentId());
             return ResponseEntity.ok(ApiResponse.success(message));
 
         } catch (Exception e) {
-            log.error("Error updating responder status for unit: {} in accident: {}", unitId, accidentId, e);
+            log.error("Error updating responder status for unit: {} in accident: {}", request.getUnitId(), request.getAccidentId(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.error("Failed to update status: " + e.getMessage()));
         }

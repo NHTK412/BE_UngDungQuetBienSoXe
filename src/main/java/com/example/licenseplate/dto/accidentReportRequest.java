@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-public class accidentReportRequest {
+public class AccidentReportRequest {
 
     @NotBlank(message = "Camera ID is required")
     private String cameraId;
