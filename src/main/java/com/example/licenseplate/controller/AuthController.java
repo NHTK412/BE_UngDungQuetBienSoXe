@@ -68,13 +68,19 @@ public class AuthController {
     public ResponseEntity<?> signin(@RequestBody SignInRequest request, HttpServletRequest httpRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         String jwt = jwtUtil.generateJwtToken(authentication);
+
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(auth -> auth.getAuthority())
                 .collect(Collectors.toList());
-        JwtResponse response = new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), roles);
+
+        JwtResponse response = new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(),userDetails.getEmail() ,roles);
+
         return ResponseEntity.ok(response);
     }
 
