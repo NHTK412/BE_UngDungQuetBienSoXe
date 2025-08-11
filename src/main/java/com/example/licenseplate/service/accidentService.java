@@ -2,11 +2,11 @@ package com.example.licenseplate.service;
 
 import com.example.licenseplate.dto.*;
 import com.example.licenseplate.model.Accident;
-import com.example.licenseplate.model.responder;
-import com.example.licenseplate.model.responder.ResponderStatus;
-import com.example.licenseplate.model.responder.UnitType;
+import com.example.licenseplate.model.Responder;
+import com.example.licenseplate.model.Responder.ResponderStatus;
+import com.example.licenseplate.model.Responder.UnitType;
 import com.example.licenseplate.repository.AccidentRepository;
-import com.example.licenseplate.repository.responderRepository;
+import com.example.licenseplate.repository.ResponderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class AccidentService {
     private AccidentRepository accidentRepository;
 
     @Autowired
-    private responderRepository responderRepository;
+    private ResponderRepository responderRepository;
 
     /**
      * Ghi nhận tai nạn từ Python system
@@ -79,7 +79,7 @@ public class AccidentService {
      */
     public List<AccidentForUnitResponse> getAccidentsByUnitId(String unitId) {
         // Sửa lại để truyền đúng tham số
-        List<responder> responders = responderRepository.findActiveAssignmentsByUnitId(unitId,
+        List<Responder> responders = responderRepository.findActiveAssignmentsByUnitId(unitId,
                 ResponderStatus.CANCELLED);
         return responders.stream()
                 .map(this::convertToAccidentForUnitResponse)
@@ -115,7 +115,7 @@ public class AccidentService {
 
     @Transactional
     public void updateResponderStatus( UpdateresponderStatusRequest request) {
-        Optional<responder> responderOpt = responderRepository.findByAccidentIdAndUnitId(
+        Optional<Responder> responderOpt = responderRepository.findByAccidentIdAndUnitId(
                 request.getAccidentId(), request.getUnitId());
 
         if (responderOpt.isEmpty()) {
@@ -123,7 +123,7 @@ public class AccidentService {
                     "Responder not found for unit " + request.getUnitId() + " and accident " + request.getAccidentId());
         }
 
-        responder responder = responderOpt.get();
+        Responder responder = responderOpt.get();
         ResponderStatus newStatus = ResponderStatus.valueOf(request.getStatus().toUpperCase());
         responder.setStatus(newStatus);
 
@@ -149,13 +149,13 @@ public class AccidentService {
         // Logic có thể cấu hình dựa vào loại tai nạn và vị trí
 
         // Mặc định assign ambulance và traffic_police
-        responder ambulanceResponder = new responder();
+        Responder ambulanceResponder = new Responder();
         ambulanceResponder.setAccident(accident);
         ambulanceResponder.setUnitId("unit_01"); // Có thể lấy từ config hoặc service khác
         ambulanceResponder.setUnitType(UnitType.AMBULANCE);
         ambulanceResponder.setStatus(ResponderStatus.WAIT);
 
-        responder trafficPoliceResponder = new responder();
+        Responder trafficPoliceResponder = new Responder();
         trafficPoliceResponder.setAccident(accident);
         trafficPoliceResponder.setUnitId("unit_05"); // Có thể lấy từ config hoặc service khác
         trafficPoliceResponder.setUnitType(UnitType.TRAFFIC_POLICE);
@@ -188,7 +188,7 @@ public class AccidentService {
         response.setImageUrl(accident.getAccidentImageUrl());
 
         // Lấy danh sách responder
-        List<responder> responders = responderRepository.findByAccidentId(accident.getId());
+        List<Responder> responders = responderRepository.findByAccidentId(accident.getId());
         List<AccidentResponse.responderInfo> responderInfos = responders.stream()
                 .map(r -> new AccidentResponse.responderInfo(
                         r.getUnitId(),
@@ -203,7 +203,7 @@ public class AccidentService {
     /**
      * Convert responder sang accidentForUnitResponse
      */
-    private AccidentForUnitResponse convertToAccidentForUnitResponse(responder responder) {
+    private AccidentForUnitResponse convertToAccidentForUnitResponse(Responder responder) {
         Accident accident = responder.getAccident();
         return new AccidentForUnitResponse(
                 accident.getId(),

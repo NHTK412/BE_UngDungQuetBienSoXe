@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
         uniqueConstraints = @UniqueConstraint(columnNames = {"accident_id", "unit_id"}))
 @Data
 @NoArgsConstructor
-public class responder {
+public class Responder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

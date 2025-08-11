@@ -40,7 +40,7 @@ public class Accident {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "accident", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<responder> responders;
+    private List<Responder> responders;
 
     @PrePersist
     protected void onCreate() {

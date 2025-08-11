@@ -52,7 +52,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:8087"));
+                    config.setAllowedOrigins(List.of("http://localhost:8087", "http://localhost:3001"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
                     config.setExposedHeaders(List.of("Authorization"));
@@ -65,7 +65,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Điều chỉnh chỗ này _____________________________________________
                         // Các endpoint public được phép truy cập
-                        .requestMatchers("/api/auth/signin", "/api/auth/signup", "/api/auth/login-history/**")
+                        .requestMatchers("/api/auth/signin", "/api/auth/signup", "/api/auth/login-history/**",
+                                "/api/camera/**")
                         .permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .anyRequest().authenticated());
