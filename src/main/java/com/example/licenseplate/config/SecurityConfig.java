@@ -6,6 +6,7 @@ import com.example.licenseplate.service.AuthEntryPointJwt;
 import com.example.licenseplate.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -68,6 +69,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/signin", "/api/auth/signup", "/api/auth/login-history/**",
                                 "/api/camera/**")
                         .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/fcm-token/token").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .anyRequest().authenticated());
         // Điều chỉnh chỗ này _____________________________________________

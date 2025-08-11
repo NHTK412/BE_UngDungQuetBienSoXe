@@ -20,6 +20,17 @@
 		<projectlombok-lombok.version>1.18.32</projectlombok-lombok.version>
 	</properties>
 	<dependencies>
+		
+		
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.3.0</version>
+		</dependency>
+
+		
+
+		
 		<!-- Spring Boot Starter Data JPA -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
