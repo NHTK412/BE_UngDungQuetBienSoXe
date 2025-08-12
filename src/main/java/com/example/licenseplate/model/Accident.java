@@ -10,7 +10,7 @@ import java.util.List;
 @Table(name = "accidents")
 @Data
 @NoArgsConstructor
-public class accident {
+public class Accident {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -40,7 +40,7 @@ public class accident {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "accident", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<responder> responders;
+    private List<Responder> responders;
 
     @PrePersist
     protected void onCreate() {

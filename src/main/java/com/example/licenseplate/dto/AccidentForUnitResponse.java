@@ -9,8 +9,11 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class accidentReportResponse {
-    private String message;
+public class AccidentForUnitResponse {
     private Integer accidentId;
-    private LocalDateTime createdAt;
+    private String roadName;
+    private LocalDateTime timestamp;
+    private String accidentType;
+    private String imageUrl;
+    private String status;
 }

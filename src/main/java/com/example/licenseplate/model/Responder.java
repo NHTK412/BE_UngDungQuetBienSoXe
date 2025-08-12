@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
         uniqueConstraints = @UniqueConstraint(columnNames = {"accident_id", "unit_id"}))
 @Data
 @NoArgsConstructor
-public class responder {
+public class Responder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +18,7 @@ public class responder {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accident_id", nullable = false)
-    private accident accident;
+    private Accident accident;
 
     @Column(name = "unit_id", nullable = false, length = 50)
     private String unitId;

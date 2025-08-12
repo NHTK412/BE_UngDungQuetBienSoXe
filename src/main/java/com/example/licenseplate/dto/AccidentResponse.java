@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class accidentResponse {
+public class AccidentResponse {
     private Integer accidentId;
     private String roadName;
     private String cameraId;

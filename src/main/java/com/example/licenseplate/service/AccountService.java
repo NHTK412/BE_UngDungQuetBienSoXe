@@ -1,9 +1,13 @@
 package com.example.licenseplate.service;
 
+import com.example.licenseplate.dto.StaffResponse;
 import com.example.licenseplate.model.Account;
+import com.example.licenseplate.model.Person;
 import com.example.licenseplate.repository.AccountRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,5 +45,15 @@ public class AccountService {
         accountRepository.deleteById(id);
     }
 
+    public List<StaffResponse> getStaff(String role) {
+        var rows = accountRepository.findStaff(role);
+        var out = new ArrayList<StaffResponse>();
+        for (Object[] r : rows) {
+            Person p = (Person) r[0];
+            Account a = (Account) r[1];
+            out.add(StaffResponse.from(p, a));  // đã bao gồm facePath
+        }
+        return out;
+    }
     
 }

@@ -1,6 +1,7 @@
 package com.example.licenseplate.controller;
 
 import com.example.licenseplate.dto.ResetPasswordRequest;
+import com.example.licenseplate.dto.StaffResponse;
 import com.example.licenseplate.model.Account;
 import com.example.licenseplate.service.AccountService;
 import jakarta.validation.Valid;
@@ -54,5 +55,12 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Error updating account: " + e.getMessage());
         }
+    }
+    //them join account + person
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/staff")
+    public ResponseEntity<List<StaffResponse>> getStaff(@RequestParam(required = false) String role) {
+        List<StaffResponse> staff = accountService.getStaff(role);
+        return ResponseEntity.ok(staff);
     }
 }
