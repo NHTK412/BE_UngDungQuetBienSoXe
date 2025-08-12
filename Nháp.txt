@@ -25,8 +25,8 @@ public class Camera {
     @Column(name = "road_name", nullable = false, length = 255)
     private String roadName;
 
-    @Column(name = "longtitude", nullable = false)
-    private Integer longtitude;
+    @Column(name = "longitude", nullable = false)
+    private Integer longitude;
 
     @Column(name = "latatude", nullable = false)
     private Integer latatude;

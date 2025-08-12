@@ -14,13 +14,12 @@ public class AccidentReportRequest {
     @NotBlank(message = "Camera ID is required")
     private String cameraId;
 
-    @NotBlank(message = "Road name is required")
     private String roadName;
 
     @NotNull(message = "Timestamp is required")
     private LocalDateTime timestamp;
 
-    private String accidentImageBase64;
+    private String accidentUrl;
 
     private String accidentType = "car_crash";
 }

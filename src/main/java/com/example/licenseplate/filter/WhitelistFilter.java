@@ -15,13 +15,13 @@ public class WhitelistFilter extends OncePerRequestFilter {
 
     private static final List<String> WHITELIST = Arrays.asList(
             "/api/auth/signup",
-            "/api/auth/signin"
-    );
+            "/api/auth/signin",
+            "/api/accidents");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+            HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
         String path = request.getRequestURI();
         if (WHITELIST.stream().anyMatch(path::startsWith)) {

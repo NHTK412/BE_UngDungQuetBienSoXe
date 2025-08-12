@@ -13,14 +13,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CameraDTO {
     private String roadName;
-    private Double longtitude;
+    private Double longitude;
     private Double latitude;
     private String brand;
 
     public CameraDTO(Camera camera) {
         this.roadName = camera.getRoadName();
         this.latitude = camera.getLatitude().doubleValue();
-        this.longtitude = camera.getLongtitude().doubleValue();
+        this.longitude = camera.getLongtitude().doubleValue();
         this.brand = camera.getBrand();
     }
 }

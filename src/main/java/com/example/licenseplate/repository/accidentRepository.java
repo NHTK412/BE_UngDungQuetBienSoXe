@@ -10,7 +10,7 @@ public interface AccidentRepository extends JpaRepository<Accident, Integer> {
 
     List<Accident> findByRoadNameContaining(String roadName);
 
-    List<Accident> findByCameraId(String cameraId);
+    List<Accident> findByCameraId(Integer cameraId);
 
     List<Accident> findByAccidentType(String accidentType);
 

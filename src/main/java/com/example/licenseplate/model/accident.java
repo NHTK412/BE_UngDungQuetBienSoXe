@@ -15,8 +15,10 @@ public class Accident {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "camera_id", nullable = false, length = 50)
-    private String cameraId;
+    // Quan hệ nhiều tai nạn thuộc 1 camera
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "camera_id", nullable = false)
+    private Camera camera;
 
     @Column(name = "road_name", nullable = false)
     private String roadName;
@@ -24,16 +26,14 @@ public class Accident {
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
 
-    @Column(name = "accident_image_base64", columnDefinition = "LONGTEXT")
-    private String accidentImageBase64;
-
+    // Lưu url ảnh tai nạn
     @Column(name = "accident_image_url", length = 500)
     private String accidentImageUrl;
 
     @Column(name = "accident_type", nullable = false, length = 100)
     private String accidentType = "car_crash";
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")

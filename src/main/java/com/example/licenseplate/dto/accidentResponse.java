@@ -13,7 +13,7 @@ import java.util.List;
 public class AccidentResponse {
     private Integer accidentId;
     private String roadName;
-    private String cameraId;
+    private Integer cameraId;
     private LocalDateTime timestamp;
     private String accidentType;
     private String imageUrl;
