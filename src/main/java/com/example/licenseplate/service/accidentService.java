@@ -57,79 +57,101 @@ public class AccidentService {
     /**
      * Ghi nhận tai nạn từ Python system
      */
+
     @Transactional
     public AccidentReportResponse reportAccident(MultipartFile file, Integer cameraId, String accidentType) {
         try {
-
             Optional<Camera> camera = cameraRepository.findById(cameraId);
+            if (!camera.isPresent()) {
+                throw new EntityNotFoundException("Camera not found with id: " + cameraId);
+            }
 
             Accident accident = new Accident();
-
             accident.setCamera(camera.get());
             accident.setAccidentType(accidentType);
 
             String filePath = imageService.saveFile(file);
-
             accident.setAccidentImageUrl(filePath);
 
             List<UserLocation> userLocationList = userLocationRepository.findAll();
 
-            String userMin = "";
-            Double dismin = Double.MAX_VALUE; // Khởi tạo bằng giá trị lớn nhất
+            String nearestUserId = null;
+            Double minDistance = Double.MAX_VALUE;
 
             for (UserLocation userLocation : userLocationList) {
-                // Lấy tọa độ user và camera dưới dạng String "latitude,longitude"
-                String origin = userLocation.getLatitude().doubleValue() + ","
-                        + userLocation.getLongitude().doubleValue();
-                String destination = camera.get().getLatitude().doubleValue() + ","
-                        + camera.get().getLongtitude().doubleValue();
+                try {
+                    // Tạo coordinates với định dạng chính xác
+                    String origin = String.format("%.6f,%.6f",
+                            userLocation.getLatitude().doubleValue(),
+                            userLocation.getLongitude().doubleValue());
+                    String destination = String.format("%.6f,%.6f",
+                            camera.get().getLatitude().doubleValue(),
+                            camera.get().getLongtitude().doubleValue());
 
-                // Gọi API Goong DistanceMatrix (giả sử bạn đã có service gọi API)
-                Double distance = goongDistanceMatrixService.getDistanceMatrix(origin, destination, "bike");
+                    log.info("Calculating distance from {} to {}", origin, destination);
 
-                if (distance != null && distance < dismin) {
-                    dismin = distance;
-                    userMin = userLocation.getAccount().getId(); // hoặc userLocation.getSomeIdentifier()
+                    Double distance = goongDistanceMatrixService.getDistanceMatrix(origin, destination, "bike");
+
+                    if (distance != null && distance < minDistance) {
+                        minDistance = distance;
+                        nearestUserId = userLocation.getAccount().getId();
+                        log.info("Found closer user: {} at distance: {} km", nearestUserId, distance);
+                    }
+                } catch (Exception e) {
+                    log.error("Error calculating distance for user {}: {}",
+                            userLocation.getAccount().getId(), e.getMessage());
+                    // Tiếp tục với user khác thay vì dừng lại
+                    continue;
                 }
             }
 
-            // kết quả:
-            System.out.println("User gần nhất: " + userMin + " với khoảng cách: " + dismin + " km");
+            // Fallback nếu không tính được distance nào
+            if (nearestUserId == null && !userLocationList.isEmpty()) {
+                log.warn("Could not calculate distances, using first available user");
+                nearestUserId = userLocationList.get(0).getAccount().getId();
+                minDistance = 0.0; // hoặc một giá trị mặc định
+            }
 
-            FcmToken fcmToken = fcmTokenRepository.findByAccountId(userMin);
+            if (nearestUserId != null) {
+                log.info("Nearest user: {} with distance: {} km", nearestUserId, minDistance);
 
-            String token = fcmToken.getToken();
+                // Gửi notification
+                try {
+                    FcmToken fcmToken = fcmTokenRepository.findByAccountId(nearestUserId);
+                    if (fcmToken != null) {
+                        String token = fcmToken.getToken();
+                        fcmService.sendNotification(token, "Thông Báo Phát Hiện Tai Nạn",
+                                "Vui lòng tới vị trí tai nạn gấp");
 
-            fcmService.sendNotification(token, "Thông Báo Phát Hiện Tai Nạn", "Vui lòng tới vị trí tai nạn gấp");
+                        // Tạo responder
+                        Responder responder = new Responder();
+                        responder.setAccident(accident);
+                        responder.setUnitId(nearestUserId);
+                        responder.setUnitType(UnitType.TRAFFIC_POLICE);
+                        responder.setStatus(ResponderStatus.WAIT);
+
+                        accident.setResponders(List.of(responder));
+                    } else {
+                        log.warn("No FCM token found for user: {}", nearestUserId);
+                    }
+                } catch (Exception e) {
+                    log.error("Error sending notification to user {}: {}", nearestUserId, e.getMessage());
+                }
+            }
 
             accident.setTimestamp(LocalDateTime.now());
             accident.setRoadName(camera.get().getRoadName());
 
-            Responder responder = new Responder();
-            responder.setAccident(accident);
-
-            responder.setUnitId(fcmToken.getAccount().getId());
-         
-            responder.setUnitType(UnitType.TRAFFIC_POLICE);
-
-            
-            
-
-            // Gắn responder vào accident
-            accident.setResponders(List.of(responder));
-
-            Accident new_accident = accidentRepository.save(accident);
+            Accident savedAccident = accidentRepository.save(accident);
 
             return new AccidentReportResponse(
                     "Accident reported successfully.",
-                    new_accident.getId(),
-                    new_accident.getCreatedAt());
+                    savedAccident.getId(),
+                    savedAccident.getCreatedAt());
 
         } catch (Exception e) {
             log.error("Error reporting accident", e);
-
             throw new RuntimeException("Failed to report accident: " + e.getMessage());
-
         }
     }
 

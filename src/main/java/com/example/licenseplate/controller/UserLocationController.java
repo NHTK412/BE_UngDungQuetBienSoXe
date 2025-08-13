@@ -24,15 +24,17 @@ public class UserLocationController {
     }
 
     @PutMapping()
-    public ResponseEntity<?> updateLocation(@RequestBody UserLocationRequest userLocationReq) {
+    public void  updateLocation(@RequestBody UserLocationRequest userLocationReq) {
 
         UserLocation userLocation = userLocationRepository.findByAccountId(userLocationReq.getAccountId());
 
         userLocation.setLatitude(new BigDecimal(Double.toString(userLocationReq.getLatitude())));
         userLocation.setLongitude(new BigDecimal(Double.toString(userLocationReq.getLongitude())));
 
-        return ResponseEntity.ok(Map.of(
-                "mess", "ok"));
+        userLocationRepository.save(userLocation);
+
+        // return ResponseEntity.ok(Map.of(
+                // "mess", "ok"));
     }
 
 }
