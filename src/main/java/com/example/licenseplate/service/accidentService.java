@@ -188,7 +188,7 @@ public class AccidentService {
         }
 
         Responder responder = responderOpt.get();
-        ResponderStatus newStatus = ResponderStatus.valueOf(request.getStatus().toUpperCase());
+        ResponderStatus newStatus = ResponderStatus.valueOf(null, request.getStatus().toUpperCase());
         responder.setStatus(newStatus);
 
         responderRepository.save(responder);
