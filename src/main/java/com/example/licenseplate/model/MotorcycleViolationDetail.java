@@ -37,5 +37,5 @@ public class MotorcycleViolationDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "violation_id", referencedColumnName = "id", insertable = false, updatable = false)
-    private MotorcycleViolationReport violation;
+    private CarViolationReport violation;
 }

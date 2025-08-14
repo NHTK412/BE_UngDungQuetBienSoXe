@@ -5,7 +5,9 @@ server:
 spring:
   datasource:
     # url: jdbc:mysql://localhost:3306/test_android_system
+    # url: jdbc:mysql://localhost:3306/traffic_management_system_new
     url: jdbc:mysql://localhost:3306/traffic_management_system
+
     username: root
     password: Tuankhang412
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -22,3 +24,10 @@ python:
 app:
   image:
     directory: "D:/Programming_Language/Python/LearingFastAPI/imgmatch_api/Data/"
+    accident: "D:/Programming_Language/BackEnd/Java/ITS_Minh/FIX_CODE_Dang_Lam/BE_UngDungQuetBienSoXe/src/main/java/com/example/licenseplate/image/"
+
+
+goong:
+  map:
+    api:
+      key: "Qlw9eguFkCeKQtRGdej4ABttAenBHvNRO7I46PKO"
