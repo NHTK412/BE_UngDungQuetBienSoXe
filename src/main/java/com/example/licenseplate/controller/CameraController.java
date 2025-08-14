@@ -1,8 +1,10 @@
 package com.example.licenseplate.controller;
 
 import com.example.licenseplate.dto.CameraDTO;
+import com.example.licenseplate.model.Accident;
 import com.example.licenseplate.model.Camera;
 import com.example.licenseplate.model.Responder;
+import com.example.licenseplate.repository.AccidentRepository;
 import com.example.licenseplate.repository.CameraRepository;
 import com.example.licenseplate.repository.ResponderRepository;
 import com.example.licenseplate.service.GoongDistanceMatrixService;
@@ -30,9 +32,12 @@ public class CameraController {
 
     private final ResponderRepository responderRepository;
 
-    public CameraController(CameraRepository cameraRepository, ResponderRepository responderRepository) {
+    private final AccidentRepository accidentRepository;
+
+    public CameraController(CameraRepository cameraRepository, ResponderRepository responderRepository, AccidentRepository accidentRepository) {
         this.cameraRepository = cameraRepository;
         this.responderRepository = responderRepository;
+        this.accidentRepository = accidentRepository;
     }
 
     @GetMapping
@@ -133,16 +138,19 @@ public class CameraController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{accidentId}")
     public ResponseEntity<?> getLocationCamere(
-            @PathVariable Integer id,
+            @PathVariable Integer accidentId,
             @RequestParam Double lat,
             @RequestParam Double lng,
-            @RequestParam Integer accidentId,
             @RequestParam String unitId) {
 
         try {
-            Optional<Camera> camera = cameraRepository.findById(id);
+
+            Optional<Accident> aOptional = accidentRepository.findById(accidentId);
+
+
+            Optional<Camera> camera = cameraRepository.findById(aOptional.get().getCamera().getId());
 
 
             String origin = String.format(Locale.US, "%.6f,%.6f",
