@@ -24,7 +24,7 @@ public class Account {
     private String password;
 
     // Role được lưu dưới dạng ENUM trong cột (chỉ 1 vai trò)
-    @Column(nullable = false, columnDefinition = "ENUM('USER','ADMIN','MODERATOR,'AMBULANCE') DEFAULT 'USER'")
+    @Column(nullable = false, columnDefinition = "ENUM('USER','ADMIN','MODERATOR','AMBULANCE') DEFAULT 'USER'")
     private String role;
 
     @Column(name = "last_login")
