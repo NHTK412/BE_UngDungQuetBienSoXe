@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -81,10 +82,17 @@ public class AccidentService {
             for (UserLocation userLocation : userLocationList) {
                 try {
                     // Tạo coordinates với định dạng chính xác
-                    String origin = String.format("%.6f,%.6f",
+                    // String origin = String.format("%.6f,%.6f",
+                    // userLocation.getLatitude().doubleValue(),
+                    // userLocation.getLongitude().doubleValue());
+                    // String destination = String.format("%.6f,%.6f",
+                    // camera.get().getLatitude().doubleValue(),
+                    // camera.get().getLongtitude().doubleValue());
+
+                    String origin = String.format(Locale.US, "%.6f,%.6f",
                             userLocation.getLatitude().doubleValue(),
                             userLocation.getLongitude().doubleValue());
-                    String destination = String.format("%.6f,%.6f",
+                    String destination = String.format(Locale.US, "%.6f,%.6f",
                             camera.get().getLatitude().doubleValue(),
                             camera.get().getLongtitude().doubleValue());
 

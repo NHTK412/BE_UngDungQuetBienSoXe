@@ -2,12 +2,20 @@ package com.example.licenseplate.controller;
 
 import com.example.licenseplate.dto.CameraDTO;
 import com.example.licenseplate.model.Camera;
+import com.example.licenseplate.model.Responder;
 import com.example.licenseplate.repository.CameraRepository;
+import com.example.licenseplate.repository.ResponderRepository;
+import com.example.licenseplate.service.GoongDistanceMatrixService;
+
+import jakarta.persistence.criteria.CriteriaBuilder.In;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,8 +25,14 @@ public class CameraController {
 
     private final CameraRepository cameraRepository;
 
-    public CameraController(CameraRepository cameraRepository) {
+    @Autowired
+    private GoongDistanceMatrixService goongDistanceMatrixService;
+
+    private final ResponderRepository responderRepository;
+
+    public CameraController(CameraRepository cameraRepository, ResponderRepository responderRepository) {
         this.cameraRepository = cameraRepository;
+        this.responderRepository = responderRepository;
     }
 
     @GetMapping
@@ -119,4 +133,43 @@ public class CameraController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getLocationCamere(
+            @PathVariable Integer id,
+            @RequestParam Double lat,
+            @RequestParam Double lng,
+            @RequestParam Integer accidentId,
+            @RequestParam String unitId) {
+
+        try {
+            Optional<Camera> camera = cameraRepository.findById(id);
+
+
+            String origin = String.format(Locale.US, "%.6f,%.6f",
+                    lat,
+                    lng);
+            String destination = String.format(Locale.US, "%.6f,%.6f",
+                    camera.get().getLatitude().doubleValue(),
+                    camera.get().getLongtitude().doubleValue());
+
+            Double distance = goongDistanceMatrixService.getDistanceMatrix(origin, destination, "bike");
+
+            Optional<Responder> rOptional = responderRepository.findByAccidentIdAndUnitId(accidentId, unitId);
+
+            // LocalDateTime timestamp =
+
+            return ResponseEntity.ok(Map.of(
+                    "distance", distance,
+                    "longitude", camera.get().getLongtitude().doubleValue(),
+                    "latitude", camera.get().getLatitude().doubleValue(),
+                    "timestamp", rOptional.get().getUpdatedAt()));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+
+                    "message", "Error deleting camera",
+                    "error", e.getMessage()));
+        }
+
+    }
 }
