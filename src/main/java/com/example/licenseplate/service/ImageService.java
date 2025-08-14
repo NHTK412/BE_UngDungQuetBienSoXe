@@ -24,7 +24,8 @@ public class ImageService {
 
         file.transferTo(filePath.toFile());
 
-        return filePath.toString();
+        // return filePath.toString();
+        return fileName;
 
     }
 
