@@ -177,20 +177,63 @@ public class AccidentService {
                 .collect(Collectors.toList());
     }
 
+    // @Transactional
+    // public void updateResponderStatus(UpdateresponderStatusRequest request) {
+    // Optional<Responder> responderOpt =
+    // responderRepository.findByAccidentIdAndUnitId(
+    // request.getAccidentId(), request.getUnitId());
+
+    // if (responderOpt.isEmpty()) {
+    // throw new EntityNotFoundException(
+    // "Responder not found for unit " + request.getUnitId() + " and accident " +
+    // request.getAccidentId());
+    // }
+
+    // Responder responder = responderOpt.get();
+    // ResponderStatus newStatus = ResponderStatus.valueOf(null,
+    // request.getStatus().toUpperCase());
+    // responder.setStatus(newStatus);
+
+    // responderRepository.save(responder);
+    // log.info("Updated responder status for unit {} to {} for accident {}",
+    // request.getUnitId(), newStatus, request.getAccidentId());
+    // }
+
     @Transactional
     public void updateResponderStatus(UpdateresponderStatusRequest request) {
         Optional<Responder> responderOpt = responderRepository.findByAccidentIdAndUnitId(
                 request.getAccidentId(), request.getUnitId());
-
         if (responderOpt.isEmpty()) {
             throw new EntityNotFoundException(
                     "Responder not found for unit " + request.getUnitId() + " and accident " + request.getAccidentId());
         }
 
         Responder responder = responderOpt.get();
-        ResponderStatus newStatus = ResponderStatus.valueOf(null, request.getStatus().toUpperCase());
-        responder.setStatus(newStatus);
 
+        ResponderStatus newStatus;
+        try {
+            String statusValue = request.getStatus().toLowerCase();
+            switch (statusValue) {
+                case "wait":
+                    newStatus = ResponderStatus.WAIT;
+                    break;
+                case "en_route":
+                    newStatus = ResponderStatus.EN_ROUTE;
+                    break;
+                case "arrived":
+                    newStatus = ResponderStatus.ARRIVED;
+                    break;
+                case "cancelled":
+                    newStatus = ResponderStatus.CANCELLED;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid status: " + request.getStatus());
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid status: " + request.getStatus(), e);
+        }
+
+        responder.setStatus(newStatus);
         responderRepository.save(responder);
         log.info("Updated responder status for unit {} to {} for accident {}",
                 request.getUnitId(), newStatus, request.getAccidentId());
