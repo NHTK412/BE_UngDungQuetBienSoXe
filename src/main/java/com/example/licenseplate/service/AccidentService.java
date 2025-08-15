@@ -13,6 +13,7 @@ import com.example.licenseplate.repository.CameraRepository;
 import com.example.licenseplate.repository.FcmTokenRepository;
 import com.example.licenseplate.repository.ResponderRepository;
 import com.example.licenseplate.repository.UserLocationRepository;
+import com.example.licenseplate.util.GeoUtils;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -59,96 +62,221 @@ public class AccidentService {
      * Ghi nhận tai nạn từ Python system
      */
 
+    // @Transactional
+    // public AccidentReportResponse reportAccident(MultipartFile file, Integer
+    // cameraId, String accidentType) {
+    // try {
+    // Optional<Camera> camera = cameraRepository.findById(cameraId);
+    // if (!camera.isPresent()) {
+    // throw new EntityNotFoundException("Camera not found with id: " + cameraId);
+    // }
+
+    // Accident accident = new Accident();
+    // accident.setCamera(camera.get());
+    // accident.setAccidentType(accidentType);
+
+    // String filePath = imageService.saveFile(file);
+    // accident.setAccidentImageUrl(filePath);
+
+    // List<UserLocation> userLocationList = userLocationRepository.findAll();
+
+    // String nearestUserId = null;
+    // Double minDistance = Double.MAX_VALUE;
+
+    // for (UserLocation userLocation : userLocationList) {
+    // try {
+    // // Tạo coordinates với định dạng chính xác
+    // // String origin = String.format("%.6f,%.6f",
+    // // userLocation.getLatitude().doubleValue(),
+    // // userLocation.getLongitude().doubleValue());
+    // // String destination = String.format("%.6f,%.6f",
+    // // camera.get().getLatitude().doubleValue(),
+    // // camera.get().getLongtitude().doubleValue());
+
+    // String origin = String.format(Locale.US, "%.6f,%.6f",
+    // userLocation.getLatitude().doubleValue(),
+    // userLocation.getLongitude().doubleValue());
+    // String destination = String.format(Locale.US, "%.6f,%.6f",
+    // camera.get().getLatitude().doubleValue(),
+    // camera.get().getLongtitude().doubleValue());
+
+    // log.info("Calculating distance from {} to {}", origin, destination);
+
+    // Double distance = goongDistanceMatrixService.getDistanceMatrix(origin,
+    // destination, "bike");
+
+    // if (distance != null && distance < minDistance) {
+    // minDistance = distance;
+    // nearestUserId = userLocation.getAccount().getId();
+    // log.info("Found closer user: {} at distance: {} km", nearestUserId,
+    // distance);
+    // }
+    // } catch (Exception e) {
+    // log.error("Error calculating distance for user {}: {}",
+    // userLocation.getAccount().getId(), e.getMessage());
+    // // Tiếp tục với user khác thay vì dừng lại
+    // continue;
+    // }
+    // }
+
+    // // Fallback nếu không tính được distance nào
+    // if (nearestUserId == null && !userLocationList.isEmpty()) {
+    // log.warn("Could not calculate distances, using first available user");
+    // nearestUserId = userLocationList.get(0).getAccount().getId();
+    // minDistance = 0.0; // hoặc một giá trị mặc định
+    // }
+
+    // if (nearestUserId != null) {
+    // log.info("Nearest user: {} with distance: {} km", nearestUserId,
+    // minDistance);
+
+    // // Gửi notification
+    // try {
+    // FcmToken fcmToken = fcmTokenRepository.findByAccountId(nearestUserId);
+    // if (fcmToken != null) {
+    // String token = fcmToken.getToken();
+    // fcmService.sendNotification(token, "Thông Báo Phát Hiện Tai Nạn",
+    // "Vui lòng tới vị trí tai nạn gấp");
+
+    // // Tạo responder
+    // Responder responder = new Responder();
+    // responder.setAccident(accident);
+    // responder.setUnitId(nearestUserId);
+    // responder.setUnitType(UnitType.TRAFFIC_POLICE);
+    // responder.setStatus(ResponderStatus.WAIT);
+
+    // accident.setResponders(List.of(responder));
+    // } else {
+    // log.warn("No FCM token found for user: {}", nearestUserId);
+    // }
+    // } catch (Exception e) {
+    // log.error("Error sending notification to user {}: {}", nearestUserId,
+    // e.getMessage());
+    // }
+    // }
+
+    // accident.setTimestamp(LocalDateTime.now());
+    // accident.setRoadName(camera.get().getRoadName());
+
+    // Accident savedAccident = accidentRepository.save(accident);
+
+    // return new AccidentReportResponse(
+    // "Accident reported successfully.",
+    // savedAccident.getId(),
+    // savedAccident.getCreatedAt());
+
+    // } catch (Exception e) {
+    // log.error("Error reporting accident", e);
+    // throw new RuntimeException("Failed to report accident: " + e.getMessage());
+    // }
+    // }
+
     @Transactional
     public AccidentReportResponse reportAccident(MultipartFile file, Integer cameraId, String accidentType) {
         try {
-            Optional<Camera> camera = cameraRepository.findById(cameraId);
-            if (!camera.isPresent()) {
-                throw new EntityNotFoundException("Camera not found with id: " + cameraId);
+            // 1. Kiểm tra dữ liệu đầu vào
+            if (file == null || file.isEmpty()) {
+                throw new IllegalArgumentException("Thiếu file ảnh tai nạn.");
+            }
+            if (cameraId == null) {
+                throw new IllegalArgumentException("Thiếu cameraId.");
+            }
+            if (accidentType == null || accidentType.trim().isEmpty()) {
+                throw new IllegalArgumentException("Thiếu loại tai nạn (accidentType).");
+            }
+
+            // 2. Kiểm tra camera tồn tại
+            Optional<Camera> cameraOpt = cameraRepository.findById(cameraId);
+            if (!cameraOpt.isPresent()) {
+                throw new EntityNotFoundException("Không tìm thấy camera với id: " + cameraId);
+            }
+            Camera camera = cameraOpt.get();
+            if (camera.getLatitude() == null || camera.getLongtitude() == null) {
+                throw new IllegalArgumentException("Camera chưa có tọa độ hợp lệ.");
+            }
+
+            List<UserLocation> userLocationList = userLocationRepository.findAll();
+            if (userLocationList.isEmpty()) {
+                throw new IllegalStateException("Không có dữ liệu vị trí người dùng để xử lý.");
             }
 
             Accident accident = new Accident();
-            accident.setCamera(camera.get());
+            accident.setCamera(camera);
             accident.setAccidentType(accidentType);
 
             String filePath = imageService.saveFile(file);
             accident.setAccidentImageUrl(filePath);
 
-            List<UserLocation> userLocationList = userLocationRepository.findAll();
+            List<UserLocation> userLocationsFilterList = userLocationList.stream()
+                    .filter(u -> u.getLatitude() != null && u.getLongitude() != null)
+                    .sorted(Comparator.comparingDouble(
+                            u -> GeoUtils.calculateDistance(
+                                    u.getLatitude().doubleValue(),
+                                    u.getLongitude().doubleValue(),
+                                    camera.getLatitude().doubleValue(),
+                                    camera.getLongtitude().doubleValue())))
+                    .limit(3) // chỉ lấy 3 user gần nhất
+                    .collect(Collectors.toList());
 
             String nearestUserId = null;
             Double minDistance = Double.MAX_VALUE;
 
-            for (UserLocation userLocation : userLocationList) {
+            for (UserLocation userLocation : userLocationsFilterList) {
                 try {
-                    // Tạo coordinates với định dạng chính xác
-                    // String origin = String.format("%.6f,%.6f",
-                    // userLocation.getLatitude().doubleValue(),
-                    // userLocation.getLongitude().doubleValue());
-                    // String destination = String.format("%.6f,%.6f",
-                    // camera.get().getLatitude().doubleValue(),
-                    // camera.get().getLongtitude().doubleValue());
-
                     String origin = String.format(Locale.US, "%.6f,%.6f",
                             userLocation.getLatitude().doubleValue(),
                             userLocation.getLongitude().doubleValue());
                     String destination = String.format(Locale.US, "%.6f,%.6f",
-                            camera.get().getLatitude().doubleValue(),
-                            camera.get().getLongtitude().doubleValue());
-
-                    log.info("Calculating distance from {} to {}", origin, destination);
+                            camera.getLatitude().doubleValue(),
+                            camera.getLongtitude().doubleValue());
 
                     Double distance = goongDistanceMatrixService.getDistanceMatrix(origin, destination, "bike");
 
                     if (distance != null && distance < minDistance) {
                         minDistance = distance;
                         nearestUserId = userLocation.getAccount().getId();
-                        log.info("Found closer user: {} at distance: {} km", nearestUserId, distance);
                     }
                 } catch (Exception e) {
-                    log.error("Error calculating distance for user {}: {}",
-                            userLocation.getAccount().getId(), e.getMessage());
-                    // Tiếp tục với user khác thay vì dừng lại
+                    log.error("Lỗi tính khoảng cách cho user {}: {}", userLocation.getAccount().getId(),
+                            e.getMessage());
                     continue;
                 }
             }
 
-            // Fallback nếu không tính được distance nào
-            if (nearestUserId == null && !userLocationList.isEmpty()) {
-                log.warn("Could not calculate distances, using first available user");
-                nearestUserId = userLocationList.get(0).getAccount().getId();
-                minDistance = 0.0; // hoặc một giá trị mặc định
+            if (nearestUserId == null) {
+                // nearestUserId = userLocationList.get(0).getAccount().getId();
+                // minDistance = 0.0;
+
+                accident.setTimestamp(LocalDateTime.now());
+                accident.setRoadName(camera.getRoadName());
+
+                Accident savedAccident = accidentRepository.save(accident);
+
+                return new AccidentReportResponse(
+                        "Accident reported successfully.",
+                        savedAccident.getId(),
+                        savedAccident.getCreatedAt());
+
             }
 
-            if (nearestUserId != null) {
-                log.info("Nearest user: {} with distance: {} km", nearestUserId, minDistance);
-
-                // Gửi notification
-                try {
-                    FcmToken fcmToken = fcmTokenRepository.findByAccountId(nearestUserId);
-                    if (fcmToken != null) {
-                        String token = fcmToken.getToken();
-                        fcmService.sendNotification(token, "Thông Báo Phát Hiện Tai Nạn",
-                                "Vui lòng tới vị trí tai nạn gấp");
-
-                        // Tạo responder
-                        Responder responder = new Responder();
-                        responder.setAccident(accident);
-                        responder.setUnitId(nearestUserId);
-                        responder.setUnitType(UnitType.TRAFFIC_POLICE);
-                        responder.setStatus(ResponderStatus.WAIT);
-
-                        accident.setResponders(List.of(responder));
-                    } else {
-                        log.warn("No FCM token found for user: {}", nearestUserId);
-                    }
-                } catch (Exception e) {
-                    log.error("Error sending notification to user {}: {}", nearestUserId, e.getMessage());
-                }
+            FcmToken fcmToken = fcmTokenRepository.findByAccountId(nearestUserId);
+            if (fcmToken == null) {
+                throw new IllegalStateException("Không tìm thấy FCM token cho user: " + nearestUserId);
             }
+
+            fcmService.sendNotification(fcmToken.getToken(),
+                    "Thông Báo Phát Hiện Tai Nạn",
+                    "Vui lòng tới vị trí tai nạn gấp");
+
+            Responder responder = new Responder();
+            responder.setAccident(accident);
+            responder.setUnitId(nearestUserId);
+            responder.setUnitType(UnitType.TRAFFIC_POLICE);
+            responder.setStatus(ResponderStatus.WAIT);
+            accident.setResponders(List.of(responder));
 
             accident.setTimestamp(LocalDateTime.now());
-            accident.setRoadName(camera.get().getRoadName());
+            accident.setRoadName(camera.getRoadName());
 
             Accident savedAccident = accidentRepository.save(accident);
 
@@ -157,9 +285,12 @@ public class AccidentService {
                     savedAccident.getId(),
                     savedAccident.getCreatedAt());
 
+        } catch (IllegalArgumentException | EntityNotFoundException | IllegalStateException e) {
+            // Lỗi do thiếu dữ liệu hoặc không hợp lệ -> trả rõ ràng cho client
+            throw new RuntimeException("Dữ liệu không hợp lệ: " + e.getMessage());
         } catch (Exception e) {
             log.error("Error reporting accident", e);
-            throw new RuntimeException("Failed to report accident: " + e.getMessage());
+            throw new RuntimeException("Lỗi xử lý: " + e.getMessage());
         }
     }
 

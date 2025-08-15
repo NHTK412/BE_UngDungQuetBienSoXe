@@ -5,8 +5,8 @@ server:
 spring:
   datasource:
     # url: jdbc:mysql://localhost:3306/test_android_system
-    # url: jdbc:mysql://localhost:3306/traffic_management_system_new
-    url: jdbc:mysql://localhost:3306/traffic_management_system_new_new
+    url: jdbc:mysql://localhost:3306/traffic_management_system
+    # url: jdbc:mysql://localhost:3306/traffic_management_system_new_new
 
     username: root
     password: Tuankhang412
