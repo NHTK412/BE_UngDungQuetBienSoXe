@@ -2,6 +2,7 @@ package com.example.licenseplate.service;
 
 import com.example.licenseplate.dto.*;
 import com.example.licenseplate.model.Accident;
+import com.example.licenseplate.model.Account;
 import com.example.licenseplate.model.Responder;
 import com.example.licenseplate.model.UserLocation;
 import com.example.licenseplate.model.Camera;
@@ -9,6 +10,7 @@ import com.example.licenseplate.model.FcmToken;
 import com.example.licenseplate.model.Responder.ResponderStatus;
 import com.example.licenseplate.model.Responder.UnitType;
 import com.example.licenseplate.repository.AccidentRepository;
+import com.example.licenseplate.repository.AccountRepository;
 import com.example.licenseplate.repository.CameraRepository;
 import com.example.licenseplate.repository.FcmTokenRepository;
 import com.example.licenseplate.repository.ResponderRepository;
@@ -57,6 +59,9 @@ public class AccidentService {
 
     @Autowired
     private FcmService fcmService;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     /**
      * Ghi nhận tai nạn từ Python system
@@ -294,6 +299,38 @@ public class AccidentService {
         }
     }
 
+
+    // public AccidentReportResponse mobilizeUser(Integer accidentId , String userId)
+    public AccidentReportResponse mobilizeUser(Integer accidentId , String username)
+
+    {   
+        Optional<Account> account = accountRepository.findByUsername(username);
+        FcmToken fcmToken = fcmTokenRepository.findByAccountId(account.get().getId());
+        if (fcmToken == null) {
+        }
+
+        fcmService.sendNotification(fcmToken.getToken(),
+                "Thông Báo Phát Hiện Tai Nạn",
+                "Vui lòng tới vị trí tai nạn gấp");
+
+        Optional<Accident> Optaccident = accidentRepository.findById(accidentId);
+        Accident accident = Optaccident.get();
+        Responder responder = new Responder();
+        responder.setAccident(accident);
+        responder.setUnitId(account.get().getId());
+        responder.setUnitType(UnitType.TRAFFIC_POLICE);
+        responder.setStatus(ResponderStatus.EN_ROUTE);
+        accident.getResponders().add(responder);
+
+      
+
+        Accident savedAccident = accidentRepository.save(accident);
+        return new AccidentReportResponse(
+                    "Accident reported successfully.",
+                    savedAccident.getId(),
+                    savedAccident.getCreatedAt());
+    }
+
     /**
      * Lấy danh sách tất cả tai nạn cho Web Admin
      */
@@ -309,8 +346,9 @@ public class AccidentService {
      */
     public List<AccidentForUnitResponse> getAccidentsByUnitId(String unitId) {
         // Sửa lại để truyền đúng tham số
-        List<Responder> responders = responderRepository.findActiveAssignmentsByUnitId(unitId,
-                ResponderStatus.CANCELLED);
+        // List<Responder> responders = responderRepository.findActiveAssignmentsByUnitId(unitId,
+                // ResponderStatus.CANCELLED);
+                List<Responder> responders = responderRepository.findByUnitId(unitId);
         return responders.stream()
                 .map(this::convertToAccidentForUnitResponse)
                 .collect(Collectors.toList());

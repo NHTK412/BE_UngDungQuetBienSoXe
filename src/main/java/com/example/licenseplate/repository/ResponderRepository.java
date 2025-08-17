@@ -23,4 +23,5 @@ public interface ResponderRepository extends JpaRepository<Responder, Integer> {
 
     @Query("SELECT r FROM Responder r JOIN r.accident a WHERE r.unitId = :unitId AND r.status <> :cancelledStatus ORDER BY a.timestamp DESC")
     List<Responder> findActiveAssignmentsByUnitId(@Param("unitId") String unitId, @Param("cancelledStatus") ResponderStatus cancelledStatus);
+
 }

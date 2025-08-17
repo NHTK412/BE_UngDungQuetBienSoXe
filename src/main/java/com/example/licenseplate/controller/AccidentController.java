@@ -1,16 +1,23 @@
 package com.example.licenseplate.controller;
 
 import com.example.licenseplate.dto.*;
+import com.example.licenseplate.model.Accident;
+import com.example.licenseplate.model.FcmToken;
+import com.example.licenseplate.model.Responder;
+import com.example.licenseplate.model.Responder.ResponderStatus;
+import com.example.licenseplate.model.Responder.UnitType;
 import com.example.licenseplate.service.AccidentService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -73,5 +80,16 @@ public class AccidentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.error("Failed to update status: " + e.getMessage()));
         }
+    }
+
+    @PostMapping("/mobilize/{accidentId}")
+    // @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> mobilizeUser(
+            @PathVariable Integer accidentId,
+            @RequestParam String username) {
+                // AccidentReportResponse result = accidentService.mobilizeUser(accidentId, userId);
+                AccidentReportResponse result = accidentService.mobilizeUser(accidentId, username);
+
+                return ResponseEntity.ok(result);
     }
 }
